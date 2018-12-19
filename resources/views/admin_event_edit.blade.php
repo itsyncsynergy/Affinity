@@ -103,19 +103,37 @@
                           </select>  
                           <span class="fa fa-user form-control-feedback right" aria-hidden="true"></span>
                         </div>
-                      </div>                         
+                      </div> 
                       <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Group </label>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Currency </label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <select class="select2_single form-control"  name="group_id" tabindex="-1" required>
-                            <option value="{{$event->group_id}}">{{$event->name}}</option> 
-                            @foreach ($groups as $group) 
-                            <option value="{{$group->group_id}}">{{$group->name}}</option> 
-                            @endforeach
+                          <select class="select2_single form-control"  name="curr" tabindex="-1" required>
+                            <option disabled>Select Type</option>
+                            <option>USD</option> 
+                            <option>Naira</option> 
                           </select>  
                           <span class="fa fa-user form-control-feedback right" aria-hidden="true"></span>
                         </div>
                       </div>
+                      <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Price</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <input type="text" name="price" class="form-control number" value="{!! $event->price !!}" required>
+                          <span class="fa fa-card form-control-feedback right" aria-hidden="true"></span>
+                        </div>
+                      </div>                         
+                      <div class="form-group" >   
+                      <label class="control-label col-md-3 col-sm-3 col-xs-3">Interest Groups</label>                  
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                          @foreach ($groups as $group)
+                          <div class="checkbox">
+                            <label>
+                              <input type="checkbox" name="group_id[]" value="{{$group->group_id}}"> {{$group->name}}
+                            </label>
+                          </div>
+                          @endforeach
+                        </div>
+                      </div> 
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Location</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
@@ -151,7 +169,7 @@
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Description</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <textarea type="text" name="description" class="resizable_textarea form-control" required placeholder="Details here..."> {!! $event->description !!}</textarea>
+                          <textarea type="text" rows="10" name="description" class="resizable_textarea form-control" required placeholder="Details here..."> {!! $event->description !!}</textarea>
                         </div>
                       </div>
                       <input type="hidden" class="form-control" name="event_id" value="{!! $event->event_id !!}">
@@ -160,7 +178,7 @@
 
                       <div class="form-group">
                         <div class="col-md-9 col-md-offset-3">
-                          <button type="submit" class="btn btn-primary">Cancel</button>
+                          <a href="../admin_events" class="btn btn-default"> Cancel</a>
                           <button type="submit" class="btn btn-success">Submit</button>
                         </div>
                       </div>
@@ -171,13 +189,63 @@
                 </div>
               </div>
               <div class="col-md-5">
+                <div class="row">
+                   <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Tags <small>{!! $event->name !!}</small></h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                              </li>
+                              <li class="dropdown">
+                                <a href="../admin_events"><i class="fa fa-group"></i> List Events</a>
+                              </li>
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <form method="post" action="../admin_event_tag_store" class="form-horizontal">
+                                <div class="form-group">   
+                                  <label class="control-label col-md-3 col-sm-3 col-xs-3">Tags</label>                  
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                      @foreach ($tags as $tag)
+                                      <div class="col-md-4">
+                                        <div class="checkbox">
+                                          <label>
+                                            <input type="checkbox" name="tag_id[]" value="{{$tag->group_id}}"> {{$tag->name}}
+                                          </label>
+                                        </div>
+                                      </div>
+                                      @endforeach
+                                    </div>
+                                </div>
+                                <input type="hidden" class="form-control" name="event_id" value="{!! $event->event_id !!}">
+                                <div class="form-group">
+                                  <div class="col-md-9 col-md-offset-3">
+                                    <button type="submit" class="btn btn-default">Add Tags</button>
+                                  </div>
+                                </div>
+                            </form>
+                            <br>
+                      
+                        </div>
+
+                        <div class="footer">
+                          <div class="row">
+                            @foreach ($eventTag as $tagged)
+                            <div class="col-md-4">
+                              <a href="../admin_event_tag_delete/{!! $tagged->group_id !!}/{!! $event->event_id !!}"><i class="fa fa-remove" style="color: rgb(224, 12, 16)"></i> {!! $tagged->name !!}</a>
+                            </div>
+                            @endforeach
+                          </div>
+                        </div> 
+                   </div>
+                </div>
                 <div class="x_panel" style="height: 534px;overflow: auto !important;">
                   <div class="x_title">
                     <h2>Gallery <small>{!! $event->name !!}</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
                       </li>
                       <li class="dropdown">
-                        <a href="../admin_groups"><i class="fa fa-group"></i> List Events</a>
+                        <a href="../admin_events"><i class="fa fa-group"></i> List Events</a>
                       </li>
                     </ul>
                     <div class="clearfix"></div>
@@ -190,7 +258,6 @@
                       </form>
                       @foreach ($gallery as $dGallery) 
                       <div class="col-md-4" style="margin-bottom: 10px;">
-                        <!--<a href="../../affinity/public/delete_group_gallery/{!! $dGallery->id !!}/{!! $dGallery->avatar !!}"><i class="fa fa-trash-alt" style="color: #666;"></i></a>-->
                         <img src="../public/{!! $dGallery->avatar !!}" style="border: 2px solid #ccc;" height="120px" onclick='deleteImage(<?php echo json_encode($dGallery->id); ?>)'/>
                       </div>
                       
@@ -203,48 +270,7 @@
                 </div>  
               </div>
             </div>
-            <div class="row">
-              <div class="col-md-12">
-                <div class="x_panel">
-                  <div class="x_title">
-                    <h2>Joined <small>Members</small></h2>
-                    
-                  </div>
-                  <div class="x_content">
-                    
-                    <table id="datatable-buttons" class="table table-striped table-bordered">
-                      <thead>
-                        <tr>
-                          <th>Avatar</th>
-                          <th>Customer Name</th>
-                          <th>Phone</th>
-                          <th>Email</th>
-                          <th>Date Joined</th>
-                          
-                        </tr>
-                      </thead>
-
-
-                      <tbody>
-                      @foreach ($members_joined as $joined) 
-                        <tr>
-                          <td>
-                            <div class="profile_pic">
-                              <img src="public/{{ $joined->customer_avatar or 'images/profile.png'}}" style="width:60px !important; height:60px;" alt="..." class="img-circle profile_img">
-                            </div>
-                          </td>
-                          <td>{!! $joined->firstname !!} {!! $joined->lastname !!}</td>
-                          <td>{!! $joined->phone !!}</td>
-                          <td>{!! $joined->email !!}</td>
-                          <td>{!! $joined->created_at !!}</td>
-                        </tr>
-                      @endforeach  
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>  
-            </div>  
+             
           </div>
         </div>
         <!-- /page content -->
@@ -261,4 +287,18 @@
     </div>
     @include("includes.admin-absolute-index-footer-script")
   </body>
+
+  <script>
+      
+        var el = document.querySelector('input.number');
+
+      el.addEventListener('keyup', function(event){
+        if (event.which >= 37 && event.which <= 40) 
+          return;
+
+        this.value = this.value.replace(/\D/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,',');
+      });
+     
+      
+    </script>
 </html>

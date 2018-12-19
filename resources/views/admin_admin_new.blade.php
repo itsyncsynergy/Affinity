@@ -63,13 +63,21 @@
                           <span class="fa fa-user form-control-feedback right" aria-hidden="true"></span>
                         </div>
                       </div>
+
+                      <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Password</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <input type="password" name="password" class="form-control" required>
+                          <span class="fa fa-user form-control-feedback right" aria-hidden="true"></span>
+                        </div>
+                      </div>
+
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Category</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
                           <select class="select2_single form-control"  name="admin_type" tabindex="-1">
                             <option>Superadmin</option> 
-                            <option>Supervisor</option>
-                            <option>Regular</option>  
+                            <option>Supervisor</option> 
                             <option>Customer Service</option> 
                           </select>  
                           <span class="fa fa-user form-control-feedback right" aria-hidden="true"></span>

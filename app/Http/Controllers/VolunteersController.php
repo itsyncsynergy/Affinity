@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Session;
 use App\Admin;
 use App\Volunteer;
+use App\VolunteerCategories;
 use App\Location;
+use App\Countries;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -24,12 +26,38 @@ class VolunteersController extends Controller
         //
         $user = Auth::user();
         $user = Admin::where('admin_id', $user->details_id)->first();
+        $categories = VolunteerCategories::all();
+        // $volunteers = Volunteer::all();
+        // $countries = Location::distinct()->get(['country']);
 
-        $volunteers = Volunteer::all();
-        $countries = Location::distinct()->get(['country']);
+        $countries = Countries::all();
 
-        return view('admin_volunteers')->with(['user'=> $user, 'volunteers'=> $volunteers, 'countries'=>$countries]);
+        $results = DB::table('volunteers')
+        ->join('volunteer_categories', 'volunteers.category_id', '=', 'volunteer_categories.category_id')
+        ->select('volunteers.*', 'volunteer_categories.cate_title')
+        ->get();
 
+        return view('admin_volunteers')->with(['user'=> $user, 'results'=> $results, 'countries'=>$countries, 'categories'=>$categories]);
+
+    }
+
+    public function getVolunteers($id)
+    {
+        $volunteer = DB::table('volunteers')
+        ->join('volunteer_categories', 'volunteers.category_id', '=', 'volunteer_categories.category_id')
+        ->select('volunteers.id as category_id', 'volunteers.title as cate_title', 'avatar')
+        ->where('volunteers.category_id', $id)
+        ->get();
+
+        return response()->json(['error' => false, 'volunteer' => $volunteer], 200);
+
+    }
+
+    public function fetchVolunteer($id)
+    {
+        $volunteer = Volunteer::where('id', $id)->first();
+
+        return $volunteer;
     }
 
    
@@ -47,9 +75,17 @@ class VolunteersController extends Controller
 
         $volunteer->ntk = $request->input('ntk'); 
 
-        $volunteer->start_date = substr( $request->input('date'), 0, strrpos($request->input('date'), '-' ) );
+        $volunteer->category_id = $request->input('category_id');
 
-        $volunteer->end_date = substr($request->input('date'), strpos($request->input('date'), "-") + 1);
+        $volunteer->fee = $request->input('fee');
+
+        $volunteer->price = $request->input('price');
+
+        $volunteer->itinerary = $request->input('itinerary');
+
+        $volunteer->start_date = substr( $request->input('date'), 0,10 );
+
+        $volunteer->end_date = substr($request->input('date'), 13,21 + 1);
 
 
         $avatar = $request->file('avatar'); 
@@ -112,9 +148,17 @@ class VolunteersController extends Controller
 
         $volunteer->ntk = $request->input('ntk'); 
 
-        $volunteer->start_date = substr( $request->input('date'), 0, strrpos($request->input('date'), '-' ) );
+        $volunteer->category_id = $request->input('category_id');
 
-        $volunteer->end_date = substr($request->input('date'), strpos($request->input('date'), "-") + 1);
+        $volunteer->fee = $request->input('fee');
+
+        $volunteer->price = $request->input('price');
+
+        $volunteer->itinerary = $request->input('itinerary');
+
+        $volunteer->start_date = substr( $request->input('date'), 0,10 );
+
+        $volunteer->end_date = substr($request->input('date'), 13,21 + 1);
 
 
         if($request->hasFile('avatar')){
@@ -140,6 +184,19 @@ class VolunteersController extends Controller
             return back();
         }  
 
+    }
+
+    public function delete(Request $request)
+    {
+        $volunteer = Volunteer::where('id', $request->input('volunteer_id'))->first();
+
+        if($volunteer->delete()){
+            Session::flash('success', 'Volunteers has been Deleted Successfully');
+            return back();
+        }else{
+            Session::flash('error', 'An error occured. Could not updated');
+            return back();
+        } 
     }
 
 

@@ -655,7 +655,7 @@
                                     $pending++;
                                   }
                                 }  
-                                if(count($events > 0)){
+                                if(@count($events > 0)){
                                   echo ($pending/count($events)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">
@@ -694,7 +694,7 @@
                                     $in_progress++;
                                   }
                                 }
-                                if(count($events > 0)){  
+                                if(@count($events > 0)){  
                                   echo ($in_progress/count($events)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">50% Complete</span>
@@ -730,7 +730,7 @@
                                     $resolved++;
                                   }
                                 }  
-                                if(count($events > 0)){
+                                if(@count($events > 0)){
                                   echo ($resolved/count($events)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">60% Complete</span>
@@ -768,7 +768,7 @@
                                     $unresolved++;
                                   }
                                 }  
-                                if(count($events > 0)){
+                                if(@count($events > 0)){
                                   echo ($unresolved/count($events)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">60% Complete</span>
@@ -814,7 +814,7 @@
                                     $pending++;
                                   }
                                 }  
-                                if(count($events > 0)){
+                                if(@count($events > 0)){
                                   echo ($pending/count($events)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">
@@ -853,7 +853,7 @@
                                     $in_progress++;
                                   }
                                 } 
-                                if(count($events > 0)){ 
+                                if(@count($events > 0)){ 
                                   echo ($in_progress/count($events)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">50% Complete</span>
@@ -889,7 +889,7 @@
                                     $resolved++;
                                   }
                                 }  
-                                if(count($events > 0)){
+                                if(@count($events > 0)){
                                   echo ($resolved/count($events)) * 100 ;
                                 }?>%">
                                 <span class="sr-only">60% Complete</span>
@@ -926,7 +926,7 @@
                                     $unresolved++;
                                   }
                                 }  
-                                if(count($events > 0)){
+                                if(@count($events > 0)){
                                   echo ($unresolved/count($events)) * 100 ;
                                 }?>%">
                                 <span class="sr-only">60% Complete</span>
@@ -956,7 +956,7 @@
                   <div class="col-md-4">
                     <div class="x_panel tile" style="height: 202px;">     
                       <div class="x_content">
-                      <h4><b>Luxury Experience  Request Status</b></h4>
+                      <h4><b>Luxury Experience  Request</b></h4>
                         <div class="widget_summary">
                           <div class="w_left w_25">
                             <span>Pending</span>
@@ -971,7 +971,7 @@
                                     $pending++;
                                   }
                                 }  
-                                if(count($requests > 0)){
+                                if(@count($requests > 0)){
                                   echo ($pending/count($requests)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">
@@ -1010,7 +1010,7 @@
                                     $in_progress++;
                                   }
                                 } 
-                                if(count($requests > 0)){ 
+                                if(@count($requests > 0)){ 
                                   echo ($in_progress/count($requests)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">50% Complete</span>
@@ -1046,7 +1046,7 @@
                                     $resolved++;
                                   }
                                 } 
-                                if(count($requests > 0)){ 
+                                if(@count($requests > 0)){ 
                                   echo ($resolved/count($requests)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">60% Complete</span>
@@ -1083,7 +1083,7 @@
                                     $unresolved++;
                                   }
                                 } 
-                                if(count($requests > 0)){ 
+                                if(@count($requests > 0)){ 
                                   echo ($unresolved/count($requests)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">60% Complete</span>
@@ -1265,7 +1265,7 @@
                     <div class="x_panel tile" style="height: 202px;">
                       
                       <div class="x_content">
-                      <h4><b>Waitlised Product Requests Status</b></h4>
+                      <h4><b>Waitlised Product Requests</b></h4>
                         <div class="widget_summary">
                           <div class="w_left w_25">
                             <span>Pending</span>
@@ -1280,7 +1280,7 @@
                                     $pending++;
                                   }
                                 }  
-                                if(count($waitlisted_product_requests > 0)){
+                                if(@count($waitlisted_product_requests > 0)){
                                   echo ($pending/count($waitlisted_product_requests)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">
@@ -1319,7 +1319,7 @@
                                     $in_progress++;
                                   }
                                 }  
-                                if(count($waitlisted_product_requests > 0)){
+                                if(@count($waitlisted_product_requests > 0)){
                                   echo ($in_progress/count($waitlisted_product_requests)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">50% Complete</span>
@@ -1355,7 +1355,7 @@
                                     $resolved++;
                                   }
                                 } 
-                                if(count($waitlisted_product_requests > 0)){ 
+                                if(@count($waitlisted_product_requests > 0)){ 
                                 echo ($resolved/count($waitlisted_product_requests)) * 100 ;
                                 }?>%">
                                 <span class="sr-only">60% Complete</span>
@@ -1392,7 +1392,7 @@
                                     $unresolved++;
                                   }
                                 } 
-                                if(count($waitlisted_product_requests > 0)){ 
+                                if(@count($waitlisted_product_requests > 0)){ 
                                 echo ($unresolved/count($waitlisted_product_requests)) * 100 ;
                                 }?>%">
                                 <span class="sr-only">60% Complete</span>
@@ -1419,6 +1419,155 @@
                       </div>
                     </div>
                   </div>
+                  @if($user->admin_type == 'Superadmin')
+                  <div class="col-md-4">
+                    <div class="x_panel tile" style="height: 202px;">
+                      
+                      <div class="x_content">
+                      <h4><b>Expiring Offers</b></h4>
+                        <div class="widget_summary">
+                          <div class="w_left w_25">
+                            <span>Today</span>
+                          </div>
+                          <div class="w_center w_55">
+                            <div class="progress">
+                              <div class="progress-bar bg-blue" role="progressbar"  aria-valuemin="0" aria-valuemax="100" style="width: 
+                              <?php
+                                $todays = 0;
+                                foreach ($today as $tod) {
+                                  
+                                    $todays++;
+                                 
+                                }  
+                                echo $todays == 0 ? 0 : ($todays/count($today)) * 100 ;?>%">
+                                <span class="sr-only">
+                                  0
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="w_right w_20">
+                            <span>
+                              <?php
+
+                                $todays = 0;
+                                foreach ($today as $tod) {
+                                  
+                                    $todays++;
+                                 
+                                }  
+                                 
+                              ?>
+                              {{ $todays }}  
+                            </span>
+                          </div>
+                          <div class="clearfix"></div>
+                        </div>
+
+                        <div class="widget_summary">
+                          <div class="w_left w_25">
+                            <span>In 7days</span>
+                          </div>
+                          <div class="w_center w_55">
+                            <div class="progress">
+                              <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 
+                              <?php
+                                $in_seven = 0;
+                                foreach ($seven as $sev) {
+                                  
+                                    $in_seven++;
+                                  
+                                }  
+                                echo $in_seven == 0 ? 0 : ($in_seven/count($seven)) * 100 ;?>%">
+                                <span class="sr-only">50% Complete</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="w_right w_20">
+                            <span>
+                            <?php
+                                $in_seven = 0;
+                                foreach ($seven as $sev) { 
+                                    $in_seven++;
+                                }  
+                              ?>
+                              {{ $in_seven }} 
+                            </span>
+                          </div>
+                          <div class="clearfix"></div>
+                        </div>
+                        <div class="widget_summary">
+                          <div class="w_left w_25">
+                            <span>In 21days</span>
+                          </div>
+                          <div class="w_center w_55">
+                            <div class="progress">
+                              <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 
+                              <?php
+                                $in_twone = 0;
+                                foreach ($twenty_one as $twenty) {
+                                  
+                                    $in_twone++;
+                                  
+                                }  
+                                echo $in_twone == 0 ? 0 : ($in_twone/count($twenty_one)) * 100 ;?>%">
+                                <span class="sr-only">60% Complete</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="w_right w_20">
+                            <span>
+                            <?php
+                                $in_twone = 0;
+                                foreach ($twenty_one as $twenty) {
+                                  
+                                    $in_twone++;
+                                  
+                                }  
+                              ?>
+                              {{ $in_twone }} 
+                            </span>
+                            </span>
+                          </div>
+                          <div class="clearfix"></div>
+                        </div>
+
+                        <div class="widget_summary">
+                          <div class="w_left w_25">
+                            <span>In 30days</span>
+                          </div>
+                          <div class="w_center w_55">
+                            <div class="progress">
+                              <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 
+                              <?php
+                                $end_month = 0;
+                                foreach ($month as $mth) {
+                                    $end_month++;
+                                }  
+                                echo $end_month == 0 ? 0 : ($end_month/count($month)) * 100 ;?>%">
+                                <span class="sr-only">60% Complete</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="w_right w_20">
+                            <span>
+                            <?php
+                                $end_month = 0;
+                                foreach ($month as $mth) {
+                                    $end_month++;
+                                }   
+                              ?>
+                              {{ $end_month }} 
+                            </span>
+                            </span>
+                          </div>
+                          <div class="clearfix"></div>
+                        </div>
+                        
+                      </div>
+                    </div>
+                  </div>
+                  @endif
           </div>
         </div>
         <!-- /page content -->

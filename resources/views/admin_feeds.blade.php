@@ -16,6 +16,8 @@
         $('#edit_modal').modal('show');
         document.getElementById('edit_title').innerHTML = 'Edit ' +data.title;
         document.getElementById('title_input').value = data.title;
+        document.getElementById('title_url').value = data.url;
+        document.getElementById('title_summary').value = data.summary;
         document.getElementById('post_input').value = data.post;
         document.getElementById('feed_id').value = data.id;
       }
@@ -85,6 +87,7 @@
                           <td>{!! $feed->created_at !!}</td>
                           <td><a class="btn btn-default btn-success source" href="javascript:void(0)" onclick='openEditModal(<?php echo json_encode($feed); ?>)'><i class="fa fa-pencil"></i></a>
                           <button class="btn btn-default btn-success source" onclick='openMyModal(<?php echo json_encode($feed); ?>)' ><i class="fa fa-eye"></i></button>
+                          <a class="btn btn-default btn-danger source" href="admin_feed_delete/{{$feed->id}}"><i class="fa fa-trash"></i></a>
                           </td>
                         </tr>
                       @endforeach  
@@ -121,13 +124,25 @@
                           </select>  
                           <span class="fa fa-map-tag form-control-feedback right" aria-hidden="true"></span>
                         </div>
-                      </div>                    
-                      
+                      </div>           
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Avatar</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
                           <input type="file" class="form-control"  name="avatar" required>
                           <span class="fa fa-file-image-o form-control-feedback right" aria-hidden="true"></span>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Url</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <input type="text" name="url" class="form-control" required>
+                          <span class="fa fa-tag form-control-feedback right" aria-hidden="true"></span>
+                        </div>
+                      </div> 
+                      <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Summary</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <textarea type="text" name="summary" class="resizable_textarea form-control" required placeholder="Details here..."></textarea>
                         </div>
                       </div>
                       <div class="form-group">
@@ -138,7 +153,6 @@
                       </div>
                       {{--<input type="hidden" name="feed_id" class="form-control" value="{!! $id !!}" required>--}}
                       <div class="ln_solid"></div>
-
                       <div class="form-group">
                         <div class="col-md-9 col-md-offset-3">
                           <button type="submit" class="btn btn-primary">Cancel</button>
@@ -166,7 +180,6 @@
       </div>
     </div>
     @include("includes.admin-absolute-index-footer-script")
-    
   </body>
   <div id="edit_modal" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -195,13 +208,26 @@
               </select>  
               <span class="fa fa-map-tag form-control-feedback right" aria-hidden="true"></span>
             </div>
-          </div>          
+          </div> 
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-3">Url</label>
+            <div class="col-md-9 col-sm-9 col-xs-9">
+              <input type="text" name="url" id="title_url" class="form-control" required>
+              <span class="fa fa-tag form-control-feedback right" aria-hidden="true"></span>
+            </div>
+          </div>         
 
           <div class="form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-3">Avatar</label>
             <div class="col-md-9 col-sm-9 col-xs-9">
               <input type="file" class="form-control"  name="avatar" required>
               <span class="fa fa-file-image-o form-control-feedback right" aria-hidden="true"></span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-3">Summary</label>
+            <div class="col-md-9 col-sm-9 col-xs-9">
+              <textarea type="text" name="summary"  id="title_summary" class="resizable_textarea form-control" required placeholder="Summary here..."></textarea>
             </div>
           </div>
           <div class="form-group">
@@ -215,16 +241,14 @@
 
           <div class="form-group">
             <div class="col-md-9 col-md-offset-3">
-              <button type="submit" class="btn btn-primary">Cancel</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
               <button type="submit" class="btn btn-success">Submit</button>
             </div>
           </div>
 
           </form>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
+       
       </div>
     </div>
   </div>  

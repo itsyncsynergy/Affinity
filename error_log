@@ -1,0 +1,1 @@
+[13-Jun-2018 10:28:52 UTC] PHP Fatal error:  Call to a member function extension() on null in /home/affinityclub/web.theaffinityclub.com/affinitynew/app/Http/Controllers/MerchantsController.php on line 222

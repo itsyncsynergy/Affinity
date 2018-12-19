@@ -30,6 +30,35 @@ class FeedsController extends Controller
 
     }
 
+
+    //Method for external API begins here
+
+    //getting all feeds
+    public function getFeeds()
+    {
+        $feeds = Feed::all();
+
+        return $feeds->toArray();
+
+    }
+    //getting a single feeds
+    public function singleFeed($id)
+    {
+        $feed = Feed::find($id);
+
+         if (is_null($feed)) {
+
+            return response()->json(['error' => 'Feed not found.'], 200);
+           
+        }
+        else{
+
+            return response()->json(['error' => false, 'feed' => $feed], 200);
+        }
+        
+    }
+
+    //Method for API ends here
    
     public function store(Request $request)
     {
@@ -38,6 +67,10 @@ class FeedsController extends Controller
         $feed->title = $request->input('title');
 
         $feed->post = $request->input('post');
+
+        $feed->summary = $request->input('summary');
+
+        $feed->url = $request->input('url');
 
         $feed->feed_type = $request->input('feed_type'); 
 
@@ -54,7 +87,6 @@ class FeedsController extends Controller
         $feed->avatar = $path;
         
 
-
         if($feed->save()){
             Session::flash('success', 'Group '. $feed->title . ' has been created');
             return back();
@@ -65,8 +97,14 @@ class FeedsController extends Controller
 
     }
 
-    
-    
+    public function delete($id)
+    {
+        $feed = Feed::where('id', $id)->first();
+
+        $feed->delete();
+
+        return back();
+    }
 
 
     public function deleteFile(Request $request)
@@ -94,6 +132,10 @@ class FeedsController extends Controller
         $feed->title = $request->input('title');
 
         $feed->post = $request->input('post');
+
+        $feed->summary = $request->input('summary');
+
+        $feed->url = $request->input('url');
 
         $feed->feed_type = $request->input('feed_type'); 
 

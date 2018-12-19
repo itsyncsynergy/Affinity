@@ -75,8 +75,9 @@
                           <td>{!! $group->admin_name !!}</td>
                           <td>{!! $group->created_at !!}</td>
                           <td>
-                            <a class="btn btn-default btn-success source" href="admin_group_edit/{!! $group->group_id !!}"><i class="fa fa-pencil"></i></a>
-                            <button class="btn btn-default btn-success source" onclick='openMyModal(<?php echo json_encode($group); ?>)' ><i class="fa fa-eye"></i></button>
+                            <a class="btn btn-default btn-primary source" href="admin_group_edit/{!! $group->group_id !!}"><i class="fa fa-pencil"></i></a>
+                            <a class="btn btn-default btn-success source" href="admin_group_view/{!! $group->group_id !!}"><i class="fa fa-eye"></i></a> 
+                            <a class="btn btn-default btn-danger source" href="admin_group_delete/{!! $group->group_id !!}"><i class="fa fa-trash"></i></a>                          
                           </td>
                         </tr>
                       @endforeach  
@@ -109,7 +110,9 @@
         document.getElementById('body-1').innerHTML = '<img src="public/' + data.avatar + '"  style="width:100% !important; height:auto;" >';
         document.getElementById('body-2').innerHTML = data.details; 
       }
+
     </script>
+
 
     <button type="hidden" id="modal-button" data-toggle="modal" data-target="#myModal">Open Modal</button>
     
@@ -141,4 +144,5 @@
 
     </div>
   </div>
+
 </html>

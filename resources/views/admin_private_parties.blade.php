@@ -56,6 +56,7 @@
                         <tr>
                           <th>Avatar</th>
                           <th>Title</th>
+                          <th>Category</th>
                           <th>Location</th>
                           <th>Start Date </th>
                           <th>End Date </th>
@@ -74,13 +75,15 @@
                             </div>
                           </td>
                           <td>{!! $event->title !!}</td>
-                          <td>{!! $event->country !!} {!! $event->state !!} {!! $event->city !!}</td>
+                          <td>{!! $event->cate_title !!}</td>
+                          <td>{!! $event->countryName !!} {!! $event->state !!} {!! $event->city !!}</td>
                           <td>{!! $event->date !!}</td>
                           <td>{!! $event->end_date !!}</td>
                           <td>{!! $event->capacity !!}</td>
                           <td>
                             <a class="btn btn-default btn-success source" href="admin_private_party_edit/{!! $event->id !!}"><i class="fa fa-pencil"></i></a>
                             <button class="btn btn-default btn-success source" onclick='openMyModal(<?php echo json_encode($event); ?>)' ><i class="fa fa-eye"></i></button>
+                            <a class="btn btn-default btn-danger source" href="admin_private_party_delete/{!! $event->id !!}"><i class="fa fa-trash"></i></a>
                           </td>
                         </tr>
                       @endforeach  

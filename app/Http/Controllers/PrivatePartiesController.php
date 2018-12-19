@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Session;
 use App\PrivateParty;
+use App\VipAccessCategories;
 use App\PrivatepartyInfoRequest;
 use App\Location;
+use App\Countries;
 use App\PrivatePartyGallery;
 use App\Group;
 use App\Admin;
@@ -13,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 
 class PrivatePartiesController extends Controller
 {
@@ -26,7 +29,11 @@ class PrivatePartiesController extends Controller
         $user = Auth::user();
         $user = Admin::where('admin_id', $user->details_id)->first();
 
-        $events = PrivateParty::all();
+        $events = DB::table('private_parties')
+        ->join('vip_access_categories', 'private_parties.category_id', '=', 'vip_access_categories.category_id')
+        ->join('countries', 'private_parties.country', '=', 'countries.id')
+        ->select('private_parties.*', 'vip_access_categories.cate_title', 'countries.name as countryName')
+        ->get();
 
         return view('admin_private_parties')->with(['user'=> $user, 'events'=> $events]);
 
@@ -38,8 +45,12 @@ class PrivatePartiesController extends Controller
         $user = Auth::user();
         $user = Admin::where('admin_id', $user->details_id)->first();
 
-        $countries = Location::distinct()->get(['country']);
-        return view('admin_private_party_new')->with(['user'=> $user, 'countries'=> $countries]);
+        $categories = VipAccessCategories::all();
+
+        $countries = Countries::all();
+
+        // $countries = Location::distinct()->get(['country']);
+        return view('admin_private_party_new')->with(['user'=> $user, 'countries'=> $countries, 'categories' => $categories]);
     }
 
     public function editPrivateParty($id){
@@ -48,13 +59,23 @@ class PrivatePartiesController extends Controller
         $user = Auth::user();
         $user = Admin::where('admin_id', $user->details_id)->first();
         
-        $countries = Location::distinct()->get(['country']);
+        $countries = Countries::all();
         $members_joined = DB::table('privateparty_info_requests')->where('private_party_id', $id)->join('customers','customers.customer_id','=','privateparty_info_requests.customer_id')->select('customers.*', 'customers.avatar as customer_avatar', 'privateparty_info_requests.*')->get()->toArray();
 
-        $event = DB::table('private_parties')->where('id', $id)->first();
+        // $event = DB::table('private_parties')->where('id', $id)->first();
+
+        $event = DB::table('private_parties')
+        ->join('vip_access_categories', 'private_parties.category_id', '=', 'vip_access_categories.category_id')
+        ->join('countries', 'private_parties.country', '=', 'countries.id')
+        ->select('private_parties.*', 'vip_access_categories.cate_title','vip_access_categories.category_id as categoryID', 'countries.name as countryName', 'countries.id as countryID')
+        ->where('private_parties.id', $id)
+        ->first();
+        
+
+        $categories = VipAccessCategories::all();
 		
         
-        return view('admin_private_party_edit')->with(['user'=> $user, 'members_joined'=> $members_joined, 'gallery'=> $gallery, 'event'=> $event,'countries'=> $countries]);
+        return view('admin_private_party_edit')->with(['user'=> $user, 'members_joined'=> $members_joined, 'gallery'=> $gallery, 'event'=> $event,'countries'=> $countries, 'categories' => $categories]);
     }
 
     /**
@@ -86,13 +107,15 @@ class PrivatePartiesController extends Controller
 
         $event->country = $request->input('country');
 
+        $event->category_id = $request->input('category_id');
+
         $event->details = $request->input('details');
 
         $event->capacity = $request->input('capacity');
 
-        $event->date = substr( $request->input('date'), 0, strrpos($request->input('date'), '-' ) );
+        $event->date = substr( $request->input('date'), 0,10 );
 
-        $event->end_date = substr($request->input('date'), strpos($request->input('date'), "-") + 1);
+        $event->end_date = substr($request->input('date'), 13,21 + 1);
 
 
         //$event->time = $request->input('time');
@@ -122,6 +145,19 @@ class PrivatePartiesController extends Controller
         }  
 
     }
+    public function deletePrivateParty($id)
+    {
+            $event = PrivateParty::where('id', $id)->first();
+
+            if ($event->delete()) {
+               Session::flash('success', 'Record has been Deleted');
+            return back();
+            } else {
+               Session::flash('error', 'An error occured.');
+                return back();
+            }
+    }  
+    
     public function upload(Request $request)
     {
         $avatar = $request->file('avatar'); // create method to handle this section...
@@ -209,13 +245,15 @@ class PrivatePartiesController extends Controller
 
         $event->country = $request->input('country');
 
+        $event->category_id = $request->input('category_id');
+
         $event->details = $request->input('details');
 
         $event->capacity = $request->input('capacity');
 
-        $event->date = substr( $request->input('date'), 0, strrpos($request->input('date'), '-' ) );
+        $event->date = substr( $request->input('date'), 0,10 );
 
-        $event->end_date = substr($request->input('date'), strpos($request->input('date'), "-") + 1);
+        $event->end_date = substr($request->input('date'), 13,21 + 1);
 
 
         //$event->time = $request->input('time');
@@ -325,5 +363,112 @@ class PrivatePartiesController extends Controller
             return back();
         }  
 
+    }
+    public function getcategories()
+    {
+        $categories = VipAccessCategories::all();
+
+        return $categories;
+    }
+
+    public function events_to_category($id)
+    {
+        $event = DB::table('private_parties')
+        ->join('vip_access_categories', 'private_parties.category_id', '=', 'vip_access_categories.category_id')        
+        ->select('private_parties.id as category_id', 'private_parties.title as cate_title','private_parties.avatar', 'private_parties.city as venue', 'private_parties.state')
+        ->where('private_parties.category_id', $id)
+        ->get();
+
+        return $event;
+    }
+
+    public function single_event($id)
+    {
+        // $event = PrivateParty::where('id', $id)->first();
+        $event = DB::table('private_parties')
+        ->join('countries', 'private_parties.country', '=', 'countries.id')
+        ->select('private_parties.*', 'countries.name as country')
+        ->where('private_parties.id', $id)
+        ->first();
+
+        $gallery = PrivatePartyGallery::where('private_party_id', $id)
+        ->select('id', 'image as images')
+        ->get();
+
+        $gimage = PrivatePartyGallery::where('private_party_id', $id)
+        ->select('id', 'image as images')
+        ->first();
+
+        if ($gallery->isEmpty()) {
+
+            $gallery = null;
+        }
+
+        if ($gimage) {
+
+            $gimage = $gimage->images;
+
+        } 
+        else{
+
+            $gimage = null;
+        }
+
+
+        return response()->json([
+            'error' => false,
+            'event' => $event,
+            'gimage' => $gimage,
+            'gallery' => $gallery
+        ]); 
+
+        
+    }
+
+    public function makeRequest(Request $request)
+    {
+        
+
+        $event = new PrivatepartyInfoRequest;
+
+        $event->customer_id = $request->input('customer_id');
+
+        $event->fullname = $request->input('fullname');
+
+        $event->email = $request->input('email');
+
+        $event->phone = $request->input('phone');
+
+        $event->date = $request->input('date');
+
+        $event->time = $request->input('time');
+
+        $event->party_size = $request->input('party_size');
+
+        $event->others = $request->input('others');
+
+        $event->private_party_id = $request->input('party_id');
+
+        $event->category_id = $request->input('category_id');
+
+        $event->status = 'Pending';
+
+        if ($request->save()) {
+            
+            return response()->json([
+            'error' => false,
+            'message' => 'Booking Sent Successfully',
+            'reference' => $pin
+            ]);
+
+        } else {
+
+            return response()->json([
+            'error' => true,
+            'message' => 'Booking Sent Successfully'
+            ]);
+
+        }
+        
     }
 }

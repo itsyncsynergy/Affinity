@@ -69,16 +69,17 @@
                         <tr>
                           <td>
                             <div class="profile_pic">
-                              <img src="public/{{ $rental->avatar or 'images/profile.png'}}" style="width:60px !important; height:60px;" alt="..." class="img-circle profile_img">
+                              <img src="{{ $rental->avatar or 'images/profile.png'}}" style="width:60px !important; height:60px;" alt="..." class="img-circle profile_img">
                             </div>
                           </td>
                           <td>{!! $rental->name !!}</td>
-                          <td>{!! $rental->country !!} {!! $rental->state !!}</td>
+                          <td>{!! $rental->countryName !!} {!! $rental->state !!}</td>
                           <td>{!! $rental->price !!}</td>
                           <td>{!! $rental->start_date !!} to {!! $rental->end_date !!}</td>
                           <td>
-                            <a class="btn btn-default btn-success source" href="admin_rental_edit/{!! $rental->id !!}"><i class="fa fa-pencil"></i>Edit</a>
+                            <a class="btn btn-default btn-success source" href="admin_rental_edit/{!! $rental->id !!}"><i class="fa fa-pencil"></i></a>
                             <button class="btn btn-default btn-success source" onclick='openMyModal(<?php echo json_encode($rental); ?>)' ><i class="fa fa-eye"></i></button>
+                            <button class="btn btn-default btn-danger" onclick='openDeleteModal(<?php echo json_encode($rental); ?>)' ><i class="fa fa-trash"></i></button>
                           </td>
                         </tr>
                       @endforeach  
@@ -115,6 +116,13 @@
         document.getElementById('body-4').innerHTML = data.ntk;
         document.getElementById('body-5').innerHTML = data.venue + ', ' + data.state + ', ' + data.country;
         document.getElementById('body-6').innerHTML = '<p style="color: #b33857;">From N' + data.price + '</p>';
+      }
+
+      function openDeleteModal(data){
+        $('#delete_modal').modal('show');
+        document.getElementById('event_title').innerHTML = 'Delete ' +data.name;
+        document.getElementById('event_delete').value = data.name;
+        document.getElementById('event_id').value = data.id;
       }
     </script>
 
@@ -154,4 +162,40 @@
       </div>
 
     </div>
+  </div>
+
+  <div id="delete_modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" id="event_title"> </h4>
+        </div>
+        <div class="modal-body">
+        <form class="form-horizontal form-label-left" method="post" enctype="multipart/form-data" action="admin_rental_delete">
+
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-3">Title</label>
+            <div class="col-md-9 col-sm-9 col-xs-9">
+              <input type="text" name="rental_title" id="event_delete" class="form-control" readonly />
+              <span class="fa fa-tag form-control-feedback right" aria-hidden="true"></span>
+            </div>
+          </div>   
+         
+          <input type="hidden" name="rental_id" id="event_id" class="form-control">
+          <div class="ln_solid"></div>
+
+          <div class="form-group">
+            <div class="col-md-9 col-md-offset-3">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+          </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </html>

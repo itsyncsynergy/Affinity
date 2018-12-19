@@ -28,6 +28,7 @@
       function deleteImage(){
         document.getElementById('deleteForm').submit();
       }
+
     </script>  
 
   </head>
@@ -52,7 +53,7 @@
 
 
             <div class="row">
-              <div class="col-md-7 col-sm-7 col-xs-12">
+              <div class="col-md-10 col-sm-10 col-xs-12">
                   @if(Session::has('error'))
                       <div class="alert alert-danger"> {{Session::get('error')}} </div>
                   @endif
@@ -62,17 +63,45 @@
                   @endif
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>{!! $merchant->name !!}<small>Add offer</small></h2>
+                    <h2><small>Add offer</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
                       </li>
                       <li class="dropdown">
-                        <a href="../../affinity/admin_merchants_offers"><i class="fa fa-tag"></i> List Offers</a>
+                        <a href="../admin_merchants_offers"><i class="fa fa-tag"></i> List Offers</a>
                       </li>
                     </ul>
                     <div class="clearfix"></div>
                   </div>
                   <div class="x_content">
                     <form class="form-horizontal form-label-left" method="post" enctype="multipart/form-data" action="../admin_offer_store">
+                      <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Merchants</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <select name="merchant_id" class="form-control">
+                            
+                            <option>Select Merchants</option>
+                            @foreach ($merchants as $merchant)
+                              <option value="{!! $merchant->merchant_id !!} ">{!! $merchant->name !!} </option>
+                            @endforeach
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="form-group" >   
+                      <label class="control-label col-md-3 col-sm-3 col-xs-3">Tags</label>                  
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                          @foreach ($tags as $tag)
+                          <div class="col-md-2">
+                          <div class="checkbox">
+                            <label>
+                              <input type="checkbox" name="tag_id[]" value="{{$tag->group_id}}"> {{$tag->name}}
+                            </label>
+                          </div>
+                          </div>
+                          @endforeach
+                        </div>
+                      </div> 
+
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Offer Type</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
@@ -87,7 +116,7 @@
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Offer</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <input type="text" name="offer_name" class="form-control" required>
+                          <input type="number" name="offer_name" class="form-control" required step="any">
                           <span class="fa fa-tag form-control-feedback right" aria-hidden="true"></span>
                         </div>
                       </div>    
@@ -106,7 +135,8 @@
                           <label class="control-label col-md-3 col-sm-3 col-xs-3">Start & End Date</label>
                             <div class="input-prepend input-group col-md-9 col-sm-9 col-xs-9">
                               <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
-                              <input type="text" name="date" id="reservation-time" class="form-control" value="01/01/2016 - 01/25/2016" />
+                              <input type="text" name="date" id="reservation-time" class="form-control" value="
+                              " />
                             </div>
                           </div>
                         </div>
@@ -121,17 +151,7 @@
                           </div>
                           <div class="checkbox">
                             <label>
-                              <input type="checkbox" name="target_members[]" value="Business Classic"> Business Classic
-                            </label>
-                          </div>
-                          <div class="checkbox">
-                            <label>
                               <input type="checkbox" name="target_members[]" value="Premium"> Premium
-                            </label>
-                          </div>
-                          <div class="checkbox">
-                            <label>
-                              <input type="checkbox" name="target_members[]" value="Business X"> Business X
                             </label>
                           </div>
                           <div class="checkbox">
@@ -151,16 +171,16 @@
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Details</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <textarea type="text" name="details" class="resizable_textarea form-control" required placeholder="Details here..."></textarea>
+                          <textarea type="text" name="details" id="details"></textarea>
+                          <!-- <textarea id="myTextarea"></textarea> -->
                         </div>
                       </div>
-                      <input type="hidden" class="form-control" value="{!! $merchant->merchant_id !!}" name="merchant_id" required>
                       
                       <div class="ln_solid"></div>
 
                       <div class="form-group">
                         <div class="col-md-9 col-md-offset-3">
-                          <button type="submit" class="btn btn-primary">Cancel</button>
+                          <a href="../admin_merchants_offers" class="btn btn-default"> Cancel</a>
                           <button type="submit" class="btn btn-success">Submit</button>
                         </div>
                       </div>

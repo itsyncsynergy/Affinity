@@ -142,7 +142,28 @@
                             <span class="fa fa-phone form-control-feedback right" aria-hidden="true"></span>
                           </div>
                         </div>  
-                      </div>  
+                      </div> 
+
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="control-label col-md-3 col-sm-3 col-xs-3">Line 2</label>
+                          <div class="col-md-9 col-sm-9 col-xs-9">
+                            <input type="text" name="contact2" class="form-control" value="{!! $merchant->contact2 !!}">
+                            <span class="fa fa-phone form-control-feedback right" aria-hidden="true"></span>
+                          </div>
+                        </div>  
+                      </div>
+
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="control-label col-md-3 col-sm-3 col-xs-3">Line 3</label>
+                          <div class="col-md-9 col-sm-9 col-xs-9">
+                            <input type="text" name="contact3" class="form-control" value="{!! $merchant->contact3 !!}">
+                            <span class="fa fa-phone form-control-feedback right" aria-hidden="true"></span>
+                          </div>
+                        </div>  
+                      </div>
+
                       <div class="col-md-6">
                         <div class="form-group">
                           <label class="control-label col-md-3 col-sm-3 col-xs-3">Email</label>
@@ -157,9 +178,9 @@
                           <label class="control-label col-md-3 col-sm-3 col-xs-3">Category</label>
                           <div class="col-md-9 col-sm-9 col-xs-9">
                             <select class="select2_single form-control"  name="category_id" tabindex="-1">
-                            <option value="{{$merchant->category_id}}">{{$merchant->category_id}}</option>
+                            <option value="$merchant->category_id">{{$merchant->categoryName}}</option>
                               @foreach ($categories as $category) 
-                              <option value="{{$category->name}}">{{$category->name}}</option> 
+                              <option value="{{$category->category_id}}">{{$category->name}}</option> 
                               @endforeach
                             </select>  
                             <span class="fa fa-tag form-control-feedback right" aria-hidden="true"></span>
@@ -171,9 +192,8 @@
                           <label class="control-label col-md-3 col-sm-3 col-xs-3">Country</label>
                           <div class="col-md-9 col-sm-9 col-xs-9">
                             <select class="select2_single form-control" onchange="getStates()" id="country" name="country" tabindex="-1">
-                            <option value="{{$merchant->country}}">{{$merchant->country}}</option> 
-                              @foreach ($countries as $country) 
-                              <option value="{{$country->country}}">{{$country->country}}</option> 
+                              @foreach ($countries as $country)
+                              <option value="{{$country->name}}">{{$country->name}}</option> 
                               @endforeach
                             </select>  
                             <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
@@ -235,28 +255,29 @@
                           <label class="control-label col-md-3 col-sm-3 col-xs-3">Type</label>
                           <div class="col-md-9 col-sm-9 col-xs-9">
                             <select class="select2_single form-control"  name="type" tabindex="-1">
+                              <option value="{!! $merchant->type !!}">{!! $merchant->type !!} </option>
                               <option value="Privilege">Privilege</option> 
                               <option value="Service">Service</option> 
                             </select>  
-                            <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
+                            
                           </div>
                         </div>
                       </div>  
-                      <div class="col-md-6">
+                      <div class="col-md-9">
                         <div class="form-group">
-                          <label class="control-label col-md-3 col-sm-3 col-xs-3">Bio</label>
-                          <div class="col-md-9 col-sm-9 col-xs-9">
-                            <textarea type="text" name="bio" class="resizable_textarea form-control" required placeholder="Bio here...">{!! $merchant->bio !!}</textarea>
-                            <span class="fa fa-tag form-control-feedback right" aria-hidden="true"></span>
+                          <label class="control-label col-md-2 col-sm-3 col-xs-3">Bio</label>
+                          <div class="col-md-8 col-sm-9 col-xs-9">
+                            <textarea type="text" name="bio" id="bio">{!! $merchant->bio !!}</textarea>
+                            
                           </div>
                         </div>
                       </div>  
-                      <div class="col-md-6">
+                      <div class="col-md-9">
                         <div class="form-group">
-                          <label class="control-label col-md-3 col-sm-3 col-xs-3">Need to know</label>
-                          <div class="col-md-9 col-sm-9 col-xs-9">
-                          <textarea type="text" name="ntk" class="resizable_textarea form-control" required placeholder="Need to know here...">{!! $merchant->ntk !!}</textarea>
-                            <span class="fa fa-tag form-control-feedback right" aria-hidden="true"></span>
+                          <label class="control-label col-md-2 col-sm-3 col-xs-3">Need to know</label>
+                          <div class="col-md-8 col-sm-9 col-xs-9">
+                          <textarea type="text" name="ntk" id="ntk">{!! $merchant->ntk !!}</textarea>
+                            
                           </div>
                         </div> 
                       </div>  
@@ -267,7 +288,7 @@
 
                       <div class="form-group">
                         <div class="col-md-6 col-md-offset-3">
-                          <button type="submit" class="btn btn-primary">Cancel</button>
+                          <a href="../admin_merchants" class="btn btn-default">Cancel</a>
                           <button type="submit" class="btn btn-success">Submit</button>
                         </div>
                       </div>
@@ -292,7 +313,7 @@
                     <div class="row">
                       <form id="uploadForm" action="../admin_upload_merchant_gallery" method="post" enctype="multipart/form-data">
                         <input type="file" id="avatar" style="visibility: hidden;" onchange="submitGallery()" name="avatar">
-                        <input type="hidden" class="form-control" value="{!! $merchant->id !!}" name="merchant_id" required>
+                        <input type="hidden" class="form-control" value="{!! $merchant->merchant_id !!}" name="merchant_id" required>
                       </form>
                       @foreach ($gallery as $dGallery) 
                       <div class="col-md-6" style="margin-bottom: 10px;">

@@ -71,7 +71,7 @@
                         <tr>
                           <td>
                             <div class="profile_pic">
-                              <img src="public/{{ $event->avatar or 'images/profile.png'}}" style="width:60px !important; height:60px;" alt="..." class="img-circle profile_img">
+                              <img src="{{ $event->avatar or 'images/profile.png'}}" style="width:60px !important; height:60px;" alt="..." class="img-circle profile_img">
                             </div>
                           </td>
                           <td>{!! $event->name !!}</td>
@@ -82,7 +82,8 @@
                           <td>{!! $event->end_date !!}</td>
                           <td>
                             <a class="btn btn-default btn-success source" href="admin_event_edit/{!! $event->event_id !!}"><i class="fa fa-pencil"></i></a>
-                            <button class="btn btn-default btn-success source" onclick='openMyModal(<?php echo json_encode($event); ?>)' ><i class="fa fa-eye"></i></button>
+                             <a class="btn btn-default btn-success source" href="admin_events_view/{!! $event->event_id !!}"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-default btn-danger source" href="admin_event_delete/{!! $event->event_id !!}"><i class="fa fa-trash"></i></a>
                           </td>
                         </tr>
                       @endforeach  
@@ -108,44 +109,6 @@
     </div>
     @include("includes.admin-index-footer-script")
 
-    <script>
-      var myData;
-      function openMyModal(data){
-        document.getElementById('modal-button').click();
-        document.getElementById('title').innerHTML = data.name + '   <p style="color: #b33857;font-size: 12px;font-weight: 600;">From ' + data.date + ' To ' + data.end_date +'</p>';
-        document.getElementById('body-1').innerHTML = '<img src="public/' + data.avatar + '"  style="width:100% !important; height:auto;" >';
-        document.getElementById('body-2').innerHTML = data.description; 
-      }
-    </script>
-
-    <button type="hidden" id="modal-button" data-toggle="modal" data-target="#myModal">Open Modal</button>
-    
   </body>
 
-  <div id="myModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title" id="title"> </h4>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-3">
-              <div id="body-1"></div>
-            </div>
-            <div class="col-md-9">
-                <h4>Description</h4>
-                <p id="body-2"></p>
-            </div>
-          </div>  
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-
-    </div>
-  </div>
 </html>

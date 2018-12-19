@@ -64,4 +64,42 @@ class BespokeTravelsController extends Controller
         }  
 
     }
+
+    public function saveTravel(Request $request)
+    {
+        $bespoke = new BespokeTravel;
+
+        $bespoke->customer_id = $request->input('customer_id');
+
+        $bespoke->occassion = $request->input('occassion');
+
+        $bespoke->duration = $request->input('duration');
+
+        $bespoke->group_size = $request->input('group_size');
+
+        $bespoke->date = $request->input('travel_date');
+
+        $bespoke->time = $request->input('travel_time');
+
+        $bespoke->destination = $request->input('destination');
+
+        $bespoke->status = 'Pending';
+
+        if ($bespoke->save()) {
+            
+            return response()->json([
+                'error' => false,
+                'message' => 'Record Saved Successfully'
+            ]);
+
+        } else {
+            
+            return response()->json([
+                'error' => true,
+                'message' => 'Something went Wrong'
+            ]);
+
+        }
+    }
+
 }

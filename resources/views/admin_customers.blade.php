@@ -49,9 +49,9 @@
                     <h2>Active Members <small>Lists</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
                       </li>
-                      <!--<li class="dropdown">
-                        <a href="admin_merchant_new"><i class="fa fa-plus"></i> New Merchant</a>
-                      </li>-->
+                      {{--  <li class="dropdown">
+                        <a href="admin_customers_new"><i class="fa fa-group"></i> New Active Users</a>
+                      </li>  --}}
                     </ul>
                     <div class="clearfix"></div>
                   </div>
@@ -66,6 +66,7 @@
                           <th width="20%"> Membership </th>
                           <th width="15%"> Expiry Date </th>
                           <th width="15%"> Created </th>
+                          <th>Status</th>
                           <th width="10%"> Action </th>
                         </tr>
                       </thead>
@@ -84,9 +85,28 @@
                           <td>{!! $customer->membership !!}</td>
                           <td>{!! $customer->end_date !!}</td>
                           <td>{!! $customer->created_at !!}</td>
+                          @if($customer->status == 1)
+                          <td style="color: #0f0;">Activated</td>
                           <td>
-                            <button class="btn btn-default btn-success source" onclick='openMyModal(<?php echo json_encode($customer); ?>)' ><i class="fa fa-eye"></i></button>
+                            <a class="btn btn-default btn-danger source"  href="guest_deactivate_account/{!! $customer->id !!}">Deactivate</button></a>
+                          
+                            <a class="btn btn-default btn-success source" href="admin_customers_history/{{$customer->customer_id}}"><i class="fa fa-eye"></i></a>
+
+                            <a class="btn btn-default btn-danger source" href="admin_customers_delete/{{$customer->customer_id}}"><i class="fa fa-trash"></i></a>
+                            
                           </td>
+                          @endif
+                          @if($customer->status != 1)
+                          <td style="color: #f00;">Deactivated</td>
+                          <td>
+                            <a class="btn btn-default btn-success source" href="guest_activate_account/{!! $customer->id !!}">Activate</a>
+
+                            <a class="btn btn-default btn-success source" href="admin_customers_history/{{$customer->customer_id}}"><i class="fa fa-eye"></i></a>
+
+                            <a class="btn btn-default btn-danger source" href="admin_customers_delete/{{$customer->customer_id}}"><i class="fa fa-trash"></i></a>
+                            
+                          </td>
+                          @endif
                         </tr>
                       @endforeach  
                       </tbody>

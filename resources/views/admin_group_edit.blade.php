@@ -72,7 +72,7 @@
 
 
             <div class="row">
-              <div class="col-md-7 col-sm-7 col-xs-12">
+              <div class="col-md-8 col-sm-7 col-xs-12">
                   @if(Session::has('error'))
                       <div class="alert alert-danger"> {{Session::get('error')}} </div>
                   @endif
@@ -124,7 +124,7 @@
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Details</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <textarea type="text" name="details" class="resizable_textarea form-control" required placeholder="Details here...">{!! $group->details !!}</textarea>
+                          <textarea type="text" name="details" id="details">{!! $group->details !!}</textarea>
                         </div>
                       </div>
                       <input type="hidden" class="form-control" value="{!! $group->group_id !!}" name="group_id" required>
@@ -133,7 +133,7 @@
 
                       <div class="form-group">
                         <div class="col-md-9 col-md-offset-3">
-                          <button type="submit" class="btn btn-primary">Cancel</button>
+                          <a href="../admin_groups" class="btn btn-default">Cancel</a>
                           <button type="submit" class="btn btn-success">Submit</button>
                         </div>
                       </div>
@@ -142,7 +142,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-5">
+              <div class="col-md-4">
                 <div class="x_panel" style="height: 359px;overflow: auto !important;">
                   <div class="x_title">
                     <h2>Gallery <small>{!! $group->name !!}</small></h2>
@@ -162,8 +162,7 @@
                       </form>
                       @foreach ($gallery as $dGallery) 
                       <div class="col-md-6" style="margin-bottom: 10px;">
-                        <!--<a href="../../affinity/public/delete_group_gallery/{!! $dGallery->id !!}/{!! $dGallery->avatar !!}"><i class="fa fa-trash-alt" style="color: #666;"></i></a>-->
-                        <img src="../public/{!! $dGallery->avatar !!}" style="border: 2px solid #ccc;" height="120px" onclick='deleteImage(<?php echo json_encode($dGallery->id); ?>)'/>
+                        <img src="../{!! $dGallery->avatar !!}" style="border: 2px solid #ccc;" height="120px" onclick='deleteImage(<?php echo json_encode($dGallery->id); ?>)'/>
                       </div>
                       
                       @endforeach   
@@ -173,138 +172,6 @@
                     </div>  
                   </div>
                 </div>  
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-7">
-                <div class="x_panel">
-                  <div class="x_title">
-                    <h2>Joined <small>Members</small></h2>
-                    
-                  </div>
-                  <div class="x_content">
-                    
-                    <table id="datatable-buttons" class="table table-striped table-bordered">
-                      <thead>
-                        <tr>
-                          <th>Avatar</th>
-                          <th>Customer Name</th>
-                          <th>Phone</th>
-                          <th>Email</th>
-                          <th>Date Joined</th>
-                          
-                        </tr>
-                      </thead>
-
-
-                      <tbody>
-                      @foreach ($members_joined as $joined) 
-                        <tr>
-                          <td>
-                            <div class="profile_pic">
-                              <img src="public/{{ $joined->customer_avatar or 'images/profile.png'}}" style="width:60px !important; height:60px;" alt="..." class="img-circle profile_img">
-                            </div>
-                          </td>
-                          <td>{!! $joined->firstname !!} {!! $joined->lastname !!}</td>
-                          <td>{!! $joined->phone !!}</td>
-                          <td>{!! $joined->email !!}</td>
-                          <td>{!! $joined->created_at !!}</td>
-                        </tr>
-                      @endforeach  
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div> 
-              <div class="col-md-5 col-sm-5 col-xs-12">
-                @if(Session::has('error'))
-                    <div class="alert alert-danger"> {{Session::get('error')}} </div>
-                @endif
-                
-                @if(Session::has('success'))
-                    <div class="alert alert-success"> {{Session::get('success')}} </div>
-                @endif
-                <div class="x_panel">
-                  <div class="x_title">
-                    <h2>Activities <small>Events</small></h2>
-                    
-                    <div class="clearfix"></div>
-                  </div>
-                  <div class="x_content">
-                    
-                    <table id="datatable-buttons" class="table table-striped table-bordered">
-                      <thead>
-                        <tr>
-                          <th>Avatar</th>
-                          <th>Name</th>
-                          <th>Created </th>
-                        </tr>
-                      </thead>
-
-
-                      <tbody>
-                      @foreach ($events as $event) 
-                        <tr>
-                          <td>
-                            <div class="profile_pic">
-                              <img src="public/{{ $event->avatar or 'images/profile.png'}}" style="width:60px !important; height:60px;" alt="..." class="img-circle profile_img">
-                            </div>
-                          </td>
-                          <td><a href="../admin_event_edit/{!! $event->event_id !!}">{!! $event->name !!}</a></td>
-                          <td>{!! $event->created_at !!}</td>
-                        </tr>
-                      @endforeach  
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>     
-            <div class="x_panel">
-              <div class="x_title">
-                  @foreach ($group_posts as $key=>$group) 
-                  @if($key == 0)
-                  <h2>{{$group->group_name}} <small>Posts</small></h2>
-                  @endif
-                  @endforeach
-                <ul class="nav navbar-right panel_toolbox">
-                  <li class="dropdown">
-                    <a href="../admin_group_posts/{!! $group->group_id !!}" style="color: #800020;"><i class="fa fa-group"></i> INTEREST POSTS</a>
-                  </li>
-                  
-                </ul>
-                <div class="clearfix"></div>
-              </div>
-              <div class="x_content">
-                
-                <table id="datatable-buttons" class="table table-striped table-bordered">
-                  <thead>
-                    <tr>
-                      <th>Avatar</th>
-                      <th>Title</th>
-                      <th>Post</th>
-                      <th>Created </th>
-                      <th>Action </th>
-                    </tr>
-                  </thead>
-
-
-                  <tbody>
-                  @foreach ($group_posts as $group) 
-                    <tr>
-                      <td>
-                        <div class="profile_pic">
-                          <img src="../public/{{ $group->avatar or 'images/profile.png'}}" style="width:60px !important; height:60px;" alt="..." class="img-circle profile_img">
-                        </div>
-                      </td>
-                      <td>{!! $group->title !!}</td>
-                      <td>{!! $group->post !!}</td>
-                      <td>{!! $group->created_at !!}</td>
-                      <td><a class="btn btn-default btn-success source" href="../admin_group_post_delete/{!! $group->id !!}"><i class="fa fa-pencil"></i>Delete</a></td>
-                    </tr>
-                  @endforeach  
-                  </tbody>
-                </table>
               </div>
             </div>
         

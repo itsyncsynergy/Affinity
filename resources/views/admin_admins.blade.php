@@ -47,7 +47,7 @@
                   <div class="x_title">
                     <h2>Admin <small>Users</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
-                      </li>
+                      
                       <li class="dropdown">
                         <a href="admin_admin_new"><i class="fa fa-plus"></i> New Admin User</a>
                       </li>

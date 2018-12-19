@@ -7,7 +7,8 @@ use Session;
 use App\Rental;
 use App\RentalRequest;
 use App\RentalGallery;
-use App\Location;
+use App\Countries;
+use App\States;
 use App\Merchant;
 use App\Admin;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +28,11 @@ class RentalsController extends Controller
         $user = Auth::user();
         $user = Admin::where('admin_id', $user->details_id)->first();
 
-        $rentals = DB::table('rentals')->orderBy('created_at', 'desc')->get();
+        $rentals = DB::table('rentals')
+        ->join('countries', 'rentals.country', '=', 'countries.id')
+        ->select('rentals.*', 'countries.name as countryName')
+        ->orderBy('rentals.created_at', 'desc')
+        ->get();
 
         return view('admin_rentals')->with(['user'=> $user, 'rentals'=> $rentals]);
     }
@@ -37,11 +42,243 @@ class RentalsController extends Controller
         $user = Auth::user();
         $user = Admin::where('admin_id', $user->details_id)->first();
 
-        $states = Location::where('country', 'Nigeria')->select('state')->orderBy('state', 'asc')->distinct()->get();
+        // $states = Countries::where('name', 'Nigeria')->select('name')->orderBy('name', 'asc')->distinct()->get();
 
-        $countries = Location::distinct()->get(['country']);
+        $countries = Countries::all();
 
-        return view('admin_rental_new')->with(['user'=> $user, 'countries'=> $countries]);
+        $categories = DB::table('rentals_categories')->get()->toArray();
+
+        return view('admin_rental_new')->with(['user'=> $user, 'countries'=> $countries, 'categories' => $categories]);
+    }
+
+    public function getCategories()
+    {
+        $rental_categories = DB::table('rentals_categories')->get()->toArray();
+
+        return $rental_categories;
+    }
+
+    public function getRentals($id)
+    {
+        $rentals = DB::table('rentals')
+        ->join('rentals_categories', 'rentals.category', '=', 'rentals_categories.category_id')
+        ->where('rentals.category', $id)
+        ->select('rentals.id as category_id', 'rentals.name as cate_title','rentals.avatar', 'rentals.category','rentals.start_date', 'rentals.end_date', 'rentals.venue', 'rentals.state')
+        ->get();
+
+        return $rentals;
+    }
+
+    public function fetchItem($id)
+    {
+        // $item = Rental::where('id', $id)->first();
+
+        $item = DB::table('rentals')
+        ->join('countries', 'rentals.country', '=', 'countries.id')
+        ->select('rentals.*', 'countries.name as country')
+        ->where('rentals.id', $id)
+        ->first();
+
+        $gallery = RentalGallery::where('rental_id', $id)
+        ->select('id', 'avatar as images')
+        ->get();
+
+        $gimage = RentalGallery::where('rental_id', $id)
+        ->select('avatar as images')
+        ->first();
+
+        if ($gallery->isEmpty()) {
+
+            $gallery = null;
+            // $gimage = null;
+        } 
+
+        if ($gimage) {
+            $gimage = $gimage->images;
+        } else {
+            $gimage = null;
+        }
+        
+        
+
+        return response()->json([
+            'error' => false,
+            'rental' => $item,
+            'gimage' => $gimage,
+            'gallery' => $gallery
+        ]);
+    }
+
+    public function saveRequest(Request $request)
+    {
+        $category_id = $request->input('category_id');
+
+        if ($category_id == 1){
+
+             $booking = new RentalRequest;
+
+             $booking->customer_id = $request->input('customer_id');
+
+             $booking->category_id = $category_id;
+
+             $booking->rental_id = $request->input('rental_id');
+
+             $booking->check_in = $request->input('check_in');
+
+             $booking->check_out = $request->input('check_out');
+
+             $booking->no_of_pass = $request->input('no_of_guests');
+
+             $booking->see_more = $request->input('see_more');
+
+             $booking->additional_info = $request->input('additional');
+
+             $booking->status = 'Pending';
+
+             if ($booking->save()) {
+            
+                    return response()->json([
+                        'error' => false,
+                        'code' => 200,
+                        'message' => 'Request Sent Successfully'
+                    ]);
+
+            } else {
+                
+                return response()->json([
+                    'error' => true,
+                    'code' => 201,
+                    'message' => 'Request Not Sent'
+                ]);
+
+            }
+
+        }elseif ($category_id == 2) {
+
+            $date = implode(" ",$request->input('date'));
+
+            $parts = explode(' ', $date);
+
+            $start_date = $parts[0];
+
+            $end_date = $parts[1];
+
+            $booking = new RentalRequest;
+
+             $booking->customer_id = $request->input('customer_id');
+
+             $booking->category_id = $category_id;
+
+             $booking->rental_id = $request->input('rental_id');
+
+             $booking->duration = $request->input('duration');
+
+             $booking->start_date = $start_date;
+
+             $booking->end_date = $end_date;
+
+             $booking->no_of_pass = $request->input('no_of_guests');
+
+             $booking->see_more = $request->input('see_more');
+
+             $booking->additional_info = $request->input('additional');
+
+             $booking->status = 'Pending';
+
+             if ($booking->save()) {
+            
+                    return response()->json([
+                        'error' => false,
+                        'code' => 200,
+                        'message' => 'Request Sent Successfully'
+                    ]);
+
+            } else {
+                
+                return response()->json([
+                    'error' => true,
+                    'code' => 201,
+                    'message' => 'Request Not Sent'
+                ]);
+
+            }
+
+
+            
+        }elseif ($category_id == 3) {
+            
+        }elseif ($category_id == 4) {
+
+            $date = implode(" ",$request->input('date'));
+
+            $parts = explode(' ', $date);
+
+            $start_date = $parts[0];
+
+            $end_date = $parts[1];
+
+            $booking = new RentalRequest;
+
+             $booking->customer_id = $request->input('customer_id');
+
+             $booking->category_id = $category_id;
+
+             $booking->rental_id = $request->input('rental_id');
+
+             $booking->duration = $request->input('duration');
+
+             $booking->start_date = $start_date;
+
+             $booking->end_date = $end_date;
+
+             $booking->no_of_pass = $request->input('no_of_guests');
+
+             $booking->see_more = $request->input('see_more');
+
+             $booking->additional_info = $request->input('additional');
+
+             $booking->status = 'Pending';
+
+             if ($booking->save()) {
+            
+                    return response()->json([
+                        'error' => false,
+                        'code' => 200,
+                        'message' => 'Request Sent Successfully'
+                    ]);
+
+            } else {
+                
+                return response()->json([
+                    'error' => true,
+                    'code' => 201,
+                    'message' => 'Request Not Sent'
+                ]);
+
+            }
+           
+        }
+        
+
+
+    }
+
+    public function getState(Request $request){
+    
+        $states = States::where('country_id', $request->input('country_id'))->orderBy('id', 'asc')->get()->toArray();
+
+        return response()->json(['error' => false, 'states' => $states],200);
+    
+    }
+
+    public function getCode(Request $request){
+    
+        $codes = Countries::where('id', $request->input('country_id'))->get();
+
+        $states = States::where('country_id', $request->input('country_id'))->orderBy('id', 'asc')->get()->toArray();
+
+    return response()->json(['error' => false, 'codes' => $codes , 'states' => $states],200);
+    
     }
 
     public function editRentals($id){
@@ -51,12 +288,24 @@ class RentalsController extends Controller
         $user = Admin::where('admin_id', $user->details_id)->first();
         
         $members_joined = DB::table('rental_requests')->where('rental_id', $id)->join('customers','customers.customer_id','=','rental_requests.customer_id')->select('customers.*', 'customers.avatar as customer_avatar', 'rental_requests.*')->get()->toArray();
-        $countries = Location::distinct()->get(['country']);
+        // $countries = Location::distinct()->get(['country']);
 
-        $rental = Rental::where('id', $id)->first();
+        $countries = Countries::all();
+
+
+        $categories = DB::table('rentals_categories')->get()->toArray();
+
+        // $rental = Rental::where('id', $id)->first();
+
+        $rental = DB::table('rentals')
+        ->join('rentals_categories', 'rentals.category', '=', 'rentals_categories.category_id')
+        ->join('countries', 'rentals.country', '=', 'countries.id')
+        ->select('rentals.*', 'rentals_categories.cate_title as cate_title', 'rentals_categories.category_id as cate_id', 'countries.name as countryName', 'countries.id as countryID')
+        ->where('rentals.id', $id)
+        ->first();
 		
         
-        return view('admin_rental_edit')->with(['user'=> $user, 'members_joined'=> $members_joined,'gallery'=> $gallery, 'countries'=> $countries, 'rental'=> $rental]);
+        return view('admin_rental_edit')->with(['user'=> $user, 'members_joined'=> $members_joined,'gallery'=> $gallery, 'countries'=> $countries, 'rental'=> $rental, 'categories' => $categories]);
     }
 
     /**
@@ -84,9 +333,11 @@ class RentalsController extends Controller
 
         $experience->category = $request->input('category');
 
-        $experience->price = $request->input('price');
+        $experience->curr = $request->input('curr');
 
-        $experience->overview = $request->input('overview');
+        $experience->validity = $request->input('validity');
+
+        $experience->price = $request->input('price');
 
         $experience->details = $request->input('details');
 
@@ -98,11 +349,9 @@ class RentalsController extends Controller
         
         $experience->venue = $request->input('venue');
 
-        
+        $experience->start_date = substr( $request->input('date'), 0,10 );
 
-        $experience->start_date = substr( $request->input('date'), 0, strrpos($request->input('date'), '-' ) );
-
-        $experience->end_date = substr($request->input('date'), strpos($request->input('date'), "-") + 1);
+        $experience->end_date = substr($request->input('date'), 13,21 + 1);
 
         $avatar = $request->file('avatar'); // create method to handle this section...
         
@@ -115,8 +364,6 @@ class RentalsController extends Controller
         move_uploaded_file($avatar, public_path($path));
         
         $experience->avatar = $path;
-        
-
 
         if($experience->save()){
             Session::flash('success', 'Event '. $experience->experience_name . ' has been created');
@@ -193,9 +440,11 @@ class RentalsController extends Controller
 
         $experience->category = $request->input('category');
 
-        $experience->price = $request->input('price');
+        $experience->curr = $request->input('curr');
 
-        $experience->overview = $request->input('overview');
+        $experience->validity = $request->input('validity');
+
+        $experience->price = $request->input('price');
 
         $experience->details = $request->input('details');
 
@@ -207,11 +456,9 @@ class RentalsController extends Controller
         
         $experience->venue = $request->input('venue');
 
-        
+        $experience->start_date = substr( $request->input('date'), 0,10 );
 
-        $experience->start_date = substr( $request->input('date'), 0, strrpos($request->input('date'), '-' ) );
-
-        $experience->end_date = substr($request->input('date'), strpos($request->input('date'), "-") + 1);
+        $experience->end_date = substr($request->input('date'), 13,21 + 1);
 
         if($request->hasFile('avatar')){
             $avatar = $request->file('avatar'); 
@@ -234,7 +481,20 @@ class RentalsController extends Controller
             Session::flash('error', 'An error occured. Could not update experience');
             return back();
         }    
-    }     
+    } 
+
+    public function delete(Request $request)
+    {
+       $experience = Rental::where('id', $request->input('rental_id'))->first();
+
+        if($experience->delete()){
+            Session::flash('success', 'Record has been Deleted Successfully');
+            return back();
+        }else{
+            Session::flash('error', 'An error occured. Could not updated');
+            return back();
+        } 
+    }    
     
     public function upload(Request $request)
     {
@@ -306,6 +566,7 @@ class RentalsController extends Controller
         $requests = DB::table('rental_requests')->leftJoin('customers','rental_requests.customer_id', '=',  'customers.customer_id')->join('rentals','rentals.id', '=',  'rental_requests.rental_id')->select('customers.*',  'rental_requests.*', 'rentals.*')->get()->toArray();
 		
         $admins = Admin::all();
+        
         
         return view('admin_rental_requests')->with(['user'=> $user,'admins'=> $admins, 'requests'=> $requests]);
 

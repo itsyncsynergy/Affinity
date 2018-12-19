@@ -67,5 +67,10 @@ class PersonalShoppingsController extends Controller
 
     }
 
+    public function personalShop()
+    {
+        # code...
+    }
+
     
 }

@@ -56,6 +56,7 @@
                         <tr>
                           <th>Avatar</th>
                           <th>Name</th>
+                          <th>Category</th>
                           <th>Venue</th>
                           <th>Price</th>
                           <th>Date</th>
@@ -69,16 +70,18 @@
                         <tr>
                           <td>
                             <div class="profile_pic">
-                              <img src="public/{{ $experience->avatar or 'images/profile.png'}}" style="width:60px !important; height:60px;" alt="..." class="img-circle profile_img">
+                              <img src="{{ $experience->avatar or 'images/profile.png'}}" style="width:60px !important; height:60px;" alt="..." class="img-circle profile_img">
                             </div>
                           </td>
                           <td>{!! $experience->experience_name !!}</td>
+                          <td>{!! $experience->cate_title !!}</td>
                           <td>{!! $experience->venue !!}</td>
                           <td>{!! $experience->price !!}</td>
                           <td>{!! $experience->experience_start_date !!} to {!! $experience->experience_end_date !!}</td>
                           <td>
-                            <a class="btn btn-default btn-success source" href="admin_experience_edit/{!! $experience->experience_id !!}"><i class="fa fa-pencil"></i>Edit</a>
-                            <button class="btn btn-default btn-success source" onclick='openMyModal(<?php echo json_encode($experience); ?>)' ><i class="fa fa-eye"></i></button>
+                            <a class="btn btn-default btn-success source" href="admin_experience_edit/{!! $experience->experience_id !!}"><i class="fa fa-pencil"></i></a>
+                            <a class="btn btn-default btn-success source" href="admin_experience_view/{!! $experience->experience_id !!}"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-default btn-danger source" href="admin_experience_delete/{!! $experience->experience_id !!}"><i class="fa fa-trash"></i></a>
                           </td>
                         </tr>
                       @endforeach  
@@ -104,49 +107,6 @@
     </div>
     @include("includes.admin-index-footer-script")
     
-    <script>
-      var myData;
-      function openMyModal(data){
-        document.getElementById('modal-button').click();
-        document.getElementById('title').innerHTML = data.experience_name + '   <p style="color: #b33857;font-size: 12px;font-weight: 600;">From ' + data.experience_start_date + ' To ' + data.experience_end_date +'</p>';
-        document.getElementById('body-1').innerHTML = '<img src="public/' + data.avatar + '"  style="width:100% !important; height:auto;" >';
-        document.getElementById('body-2').innerHTML = data.details;
-        document.getElementById('body-3').innerHTML = data.overview; 
-        document.getElementById('body-4').innerHTML = data.ntk;
-      }
-    </script>
-
-    <button type="hidden" id="modal-button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
     
   </body>
-
-  <div id="myModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title" id="title"> </h4>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-3">
-              <div id="body-1"></div>
-            </div>
-            <div class="col-md-9">
-                <h4>Details</h4>
-                <p id="body-2"></p>
-                <h4>Overview</h4>
-                <p id="body-3"></p>
-                <h4>Need To Know</h4>
-                <p id="body-4"></p>
-            </div>
-          </div>  
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-
-    </div>
 </html>

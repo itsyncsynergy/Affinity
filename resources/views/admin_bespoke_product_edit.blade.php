@@ -24,6 +24,21 @@
       function deleteImage(){
         document.getElementById('deleteForm').submit();
       }
+       function deleteImage(id){
+        console.log(id);
+        $.confirm({
+          title: '<i class="far fa-trash-alt" style="color: red;"></i> Confirm!',
+          content: 'Are you sure you want to delete this image. This action cannot be reversed',
+          buttons: {
+              Confirm: function () {
+                  location.href="../admin_delete_bespoke_image/" +id
+              },
+              cancel: function () {
+                  $.alert('Canceled!');
+              }
+          }
+        });
+      }
     </script>  
 
   </head>
@@ -78,9 +93,20 @@
                         </div>
                       </div> 
                       <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Currency</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <select name="curr" class="form-control">
+                            <option value="{!! $bespoke_product->curr !!}">{!! $bespoke_product->curr !!}</option>
+                             <option>USD</option>
+                            <option>NGN</option>
+                          </select>
+                        </div>
+                      </div> 
+
+                      <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Price</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <input type="number" name="price" value="{!! $bespoke_product->price !!}" class="form-control" required>
+                          <input type="text" name="price" value="{!! $bespoke_product->price !!}" class="form-control number" required>
                           <span class="fa fa-user form-control-feedback right" aria-hidden="true"></span>
                         </div>
                       </div> 
@@ -112,6 +138,13 @@
                           <span class="fa fa-file-image-o form-control-feedback right" aria-hidden="true"></span>
                         </div>
                       </div>
+
+                      <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Details</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <textarea class="form-control" rows="10" name="details">{!! $bespoke_product->details !!}</textarea>
+                        </div>
+                      </div> 
                       <input type="hidden" class="form-control" value="{!! $bespoke_product->id !!}"  name="bespoke_product_id">
                       
                       <div class="ln_solid"></div>
@@ -127,6 +160,57 @@
                 </div>
               </div>
               <div class="col-md-5">
+                <div class="row">
+                   <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Tags <small></small></h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                              </li>
+                              <li class="dropdown">
+                                <a href="../admin_bespoke_products"><i class="fa fa-group"></i> List Bespoke Product</a>
+                              </li>
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <form method="post" action="../admin_product_tag_store" class="form-horizontal">
+                                <div class="form-group">   
+                                  <label class="control-label col-md-3 col-sm-3 col-xs-3">Tags</label>                  
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                      @foreach ($tags as $tag)
+                                      <div class="col-md-4">
+                                        <div class="checkbox">
+                                          <label>
+                                            <input type="checkbox" name="tag_id[]" value="{{$tag->group_id}}"> {{$tag->name}}
+                                          </label>
+                                        </div>
+                                      </div>
+                                      @endforeach
+                                    </div>
+                                </div>
+                                <input type="hidden" class="form-control" name="bespoke_product_id" value="{!! $bespoke_product->id !!}">
+                                <div class="form-group">
+                                  <div class="col-md-9 col-md-offset-3">
+                                    <button type="submit" class="btn btn-default">Add Tags</button>
+                                  </div>
+                                </div>
+                            </form>
+                            <br>
+                      
+                        </div>
+
+                        <div class="footer">
+                          <div class="row">
+                            @foreach ($eventTag as $tagged)
+                            <div class="col-md-4">
+                              <a href="../admin_product_tag_delete/{!! $tagged->group_id !!}/{!! $bespoke_product->id !!}"><i class="fa fa-trash" style="color: rgb(224, 12, 16)"></i> {!! $tagged->name !!}</a>
+                            </div>
+                            @endforeach
+                          </div>
+                        </div> 
+                   </div>
+                </div>
+
                 <div class="x_panel" style="height: 400px;overflow: auto !important;">
                   <div class="x_title">
                     <h2>Gallery <small>{!! $bespoke_product->name !!}</small></h2>
@@ -147,7 +231,7 @@
                       @foreach ($gallery as $dGallery) 
                       <div class="col-md-4" style="margin-bottom: 10px;">
                         <!--<a href="../../affinity/public/delete_group_gallery/{!! $dGallery->id !!}/{!! $dGallery->avatar !!}"><i class="fa fa-trash-alt" style="color: #666;"></i></a>-->
-                        <img src="../public/{!! $dGallery->avatar !!}" style="border: 2px solid #ccc;" height="120px"/>
+                        <img src="public/{!! $dGallery->avatar !!}" style="border: 2px solid #ccc;" height="120px" onclick='deleteImage(<?php echo json_encode($dGallery->id); ?>)'/>
                       </div>
                       
                       @endforeach   
@@ -217,4 +301,15 @@
     </div>
     @include("includes.admin-absolute-index-footer-script")
   </body>
+
+  <script>
+      var el = document.querySelector('input.number');
+
+      el.addEventListener('keyup', function(event){
+        if (event.which >= 37 && event.which <= 40) 
+          return;
+
+        this.value = this.value.replace(/\D/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,',');
+      });
+    </script>
 </html>

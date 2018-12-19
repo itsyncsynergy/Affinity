@@ -13,16 +13,21 @@
     @include("includes.admin-index-head")
     <script>
       function getStates(){
-        console.log(document.getElementById('country').value);
+        console.log(document.getElementById('country_id').value);
             $.post("get_state",
             {
-                country: document.getElementById('country').value
+                country_id: document.getElementById('country_id').value
             },
             function(data, status){
               console.log(data);
+
+              $('#state').find('option').not(':first').remove();
+
               $.each(data.states, function(i, d) {
-                $('#state').append('<option value="' + d.state + '">' + d.state + '</option>');
+                $('#state').append('<option value="' + d.name + '">' + d.name + '</option>');
               });
+
+              
             });
       }
     </script>
@@ -77,19 +82,31 @@
                           <span class="fa fa-fire form-control-feedback right" aria-hidden="true"></span>
                         </div>
                       </div>  
-                      
-                      <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Overview</label>
-                        <div class="col-md-9 col-sm-9 col-xs-9">
-                        <textarea type="text" name="overview" class="resizable_textarea form-control" required placeholder="Overview..."></textarea>
-                          <span class="fa fa-tag form-control-feedback right" aria-hidden="true"></span>
+
+                      <div class="form-group" >   
+                      <label class="control-label col-md-3 col-sm-3 col-xs-3">Tags</label>                  
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                          @foreach ($tags as $tag)
+                          <div class="col-md-2">
+                          <div class="checkbox">
+                            <label>
+                              <input type="checkbox" name="tag_id[]" value="{{$tag->tag_id}}"> {{$tag->tag_name}}
+                            </label>
+                          </div>
+                          </div>
+                          @endforeach
                         </div>
-                      </div>  
+                      </div> 
+
                       <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Need to Know</label>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Categories</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <textarea type="text" name="ntk" class="resizable_textarea form-control" required placeholder="Need to know..."></textarea>
-                          <span class="fa fa-tag form-control-feedback right" aria-hidden="true"></span>
+                          <select class="select2_single form-control" name="category_id" tabindex="-1">
+                            @foreach ($categories as $category)
+                            <option value="{{$category->category_id}}"> {{$category->cate_title}} </option>
+                            @endforeach
+                          </select> 
+                          <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
                         </div>
                       </div>  
                       <fieldset>
@@ -104,18 +121,30 @@
                         </div>
                       </fieldset> 
                       <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Currency </label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <select class="select2_single form-control"  name="curr" tabindex="-1" required>
+                            <option disabled>Select Type</option>
+                            <option>USD</option> 
+                            <option>Naira</option> 
+                          </select>  
+                          <span class="fa fa-user form-control-feedback right" aria-hidden="true"></span>
+                        </div>
+                      </div>
+                      <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Price</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <input type="number" name="price" class="form-control" required>
+                          <input type="text" name="price" class="form-control number" required>
                           <span class="fa fa-card form-control-feedback right" aria-hidden="true"></span>
                         </div>
                       </div>  
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Country</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <select class="select2_single form-control" onchange="getStates()" id="country" name="country" tabindex="-1">
+                          <select class="select2_single form-control" onchange="getStates()" id="country_id" name="country" tabindex="-1">
+                            <option>Select Country</option>
                             @foreach ($countries as $country) 
-                            <option value="{{$country->country}}">{{$country->country}}</option> 
+                            <option value="{{$country->id}}">{{$country->name}}</option> 
                             @endforeach
                           </select>  
                           <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
@@ -125,10 +154,8 @@
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">State</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
                           <select class="select2_single form-control" id="state"  name="state" tabindex="-1">
-                            {{--@foreach ($states as $state) 
-                            <option value="{{$state->state}}">{{$state->state}}</option> 
-                            @endforeach --}}
-                          </select>  
+                            <option> Select States </option>
+                          </select> 
                           <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
                         </div>
                       </div>
@@ -149,7 +176,7 @@
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Details</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <textarea type="text" name="details" class="resizable_textarea form-control" required placeholder="Details here..."></textarea>
+                          <textarea type="text" rows="10" name="details" class="resizable_textarea form-control" placeholder="Details here..."></textarea>
                         </div>
                       </div>
                       
@@ -157,7 +184,7 @@
 
                       <div class="form-group">
                         <div class="col-md-9 col-md-offset-3">
-                          <button type="submit" class="btn btn-primary">Cancel</button>
+                          <a href="../admin_experiences" class="btn btn-default">Cancel</a>
                           <button type="submit" class="btn btn-success">Submit</button>
                         </div>
                       </div>
@@ -183,4 +210,17 @@
     </div>
     @include("includes.admin-index-footer-script")
   </body>
+  <script>
+      
+        var el = document.querySelector('input.number');
+
+      el.addEventListener('keyup', function(event){
+        if (event.which >= 37 && event.which <= 40) 
+          return;
+
+        this.value = this.value.replace(/\D/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,',');
+      });
+     
+      
+    </script>
 </html>

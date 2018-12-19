@@ -45,21 +45,6 @@
       function submitGallery(){
         document.getElementById('uploadForm').submit();
       }
-
-      function getStates(){
-        $('#state').empty();
-        console.log(document.getElementById('country').value);
-            $.post("../get_state",
-            {
-                country: document.getElementById('country').value
-            },
-            function(data, status){
-              console.log(data);
-              $.each(data.states, function(i, d) {
-                $('#state').append('<option value="' + d.state + '">' + d.state + '</option>');
-              });
-            });
-      }
     
 
       function deleteImage(id){
@@ -155,22 +140,33 @@
                           </div>
                         </div>
                       </fieldset> 
+                       
+                      <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Currency</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <select class="select2_single form-control" name="curr" tabindex="-1">
+                            <option disabled>Select Currency</option>
+                            <option>USD</option> 
+                            <option>Naira</option> 
+                          </select>  
+                          <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
+                        </div>
+                      </div> 
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Price</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <input type="number" name="price" class="form-control" value="{!! $experience->price !!}" required>
+                          <input type="text" name="price" class="form-control number" value="{!! $experience->price !!}" required>
                           <span class="fa fa-card form-control-feedback right" aria-hidden="true"></span>
                         </div>
-                      </div>  
+                      </div>
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Country</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
                           <select class="select2_single form-control" onchange="getStates()" id="country" name="country" tabindex="-1">
-                          <option value="{{$experience->country}}">{{$experience->country}}</option>
-                            @foreach ($countries as $country) 
-                            <option value="{{$country->country}}">{{$country->country}}</option> 
-                            @endforeach
-                          </select>  
+                              @foreach ($countries as $country)
+                            <option value="{{$country->name}}">{{$country->name}}</option> 
+                             @endforeach}}
+                            </select>
                           <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
                         </div>
                       </div>
@@ -179,9 +175,6 @@
                         <div class="col-md-9 col-sm-9 col-xs-9">
                           <select class="select2_single form-control" id="state"  name="state" tabindex="-1">
                           <option value="{{$experience->state}}">{{$experience->state}}</option>
-                            {{-- @foreach ($states as $state) 
-                            <option value="{{$state->state}}">{{$state->state}}</option> 
-                            @endforeach --}}
                           </select>  
                           <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
                         </div>
@@ -213,7 +206,7 @@
 
                       <div class="form-group">
                         <div class="col-md-9 col-md-offset-3">
-                          <button type="submit" class="btn btn-primary">Cancel</button>
+                          <a href="../admin_luxury_experiences" class="btn btn-default"> Cancel</a>
                           <button type="submit" class="btn btn-success">Submit</button>
                         </div>
                       </div>
@@ -281,7 +274,7 @@
                         <tr>
                           <td>
                             <div class="profile_pic">
-                              <img src="public/{{ $joined->customer_avatar or 'images/profile.png'}}" style="width:60px !important; height:60px;" alt="..." class="img-circle profile_img">
+                              <img src="../{{ $joined->customer_avatar or 'images/profile.png'}}" style="width:60px !important; height:60px;" alt="..." class="img-circle profile_img">
                             </div>
                           </td>
                           <td>{!! $joined->firstname !!} {!! $joined->lastname !!}</td>
@@ -312,4 +305,18 @@
     </div>
     @include("includes.admin-absolute-index-footer-script")
   </body>
+
+  <script>
+      
+        var el = document.querySelector('input.number');
+
+      el.addEventListener('keyup', function(event){
+        if (event.which >= 37 && event.which <= 40) 
+          return;
+
+        this.value = this.value.replace(/\D/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,',');
+      });
+     
+      
+    </script>
 </html>

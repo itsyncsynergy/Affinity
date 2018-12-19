@@ -48,15 +48,14 @@
                   <div class="x_title">
                     <h2>Guests Users <small>Lists</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
+                      <li class="dropdown">
+                        <a href="admin_guests_new"><i class="fa fa-plus"></i> New Guest User</a>
                       </li>
-                      <!--<li class="dropdown">
-                        <a href="admin_merchant_new"><i class="fa fa-plus"></i> New Merchant</a>
-                      </li>-->
                     </ul>
                     <div class="clearfix"></div>
                   </div>
                   <div class="x_content">
-                    
+                    @if ($user->admin_type != 'Customer Service' && $user->admin_type != 'Supervisor')
                     <table id="datatable-buttons" class="table table-striped table-bordered">
                       <thead>
                         <tr>
@@ -65,6 +64,7 @@
                           <th>Id</th>
                           <th>Email</th>
                           <th> Created </th>
+                          <th>Status</th>
                           <th> Action </th>
                         </tr>
                       </thead>
@@ -82,13 +82,91 @@
                           <td>{!! $customer->customer_id !!}</td>
                           <td>{!! $customer->email !!}</td>
                           <td>{!! $customer->created_at !!}</td>
-                          <td>
-                            <button class="btn btn-default btn-success source" onclick='openMyModal(<?php echo json_encode($customer); ?>)' ><i class="fa fa-eye"></i></button>
+
+                          @if($customer->status == 1)
+                          <td style="color: #0f0;">Activated</td>
+                          <td><a class="btn btn-default btn-danger source"  href="guest_deactivate_account/{!! $customer->id !!}">Deactivate</button></a>
+                          <a class="btn btn-default btn-primary source" href="admin_subscription_create/{{$customer->customer_id}}"><i class="fa fa-pencil"></i></a>
+                          <button class="btn btn-default btn-success source" onclick='openMyModal(<?php echo json_encode($customer); ?>)' ><i class="fa fa-eye"></i></button>
+
+                            <a class="btn btn-default btn-danger source" href="admin_guests_delete/{{$customer->customer_id}}"><i class="fa fa-trash"></i></a>
+                            
                           </td>
+                          @endif
+                          @if($customer->status != 1)
+                          <td style="color: #f00;">Deactivated</td>
+                          <td><a class="btn btn-default btn-success source" href="guest_activate_account/{!! $customer->id !!}">Activate</a>
+                          <a class="btn btn-default btn-primary source" href="admin_subscription_create/{{$customer->customer_id}}"><i class="fa fa-pencil"></i></a>
+                          <button class="btn btn-default btn-success source" onclick='openMyModal(<?php echo json_encode($customer); ?>)' ><i class="fa fa-eye"></i></button>
+
+                            <a class="btn btn-default btn-danger source" href="admin_guests_delete/{{$customer->customer_id}}"><i class="fa fa-trash"></i></a>
+                            
+                            </td>
+                          @endif
+                          
                         </tr>
                       @endforeach  
                       </tbody>
                     </table>
+                    @endif
+
+                     @if ($user->admin_type == 'Customer Service')
+                    <table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap">
+                      <thead>
+                        <tr>
+                          <th>Avatar</th>
+                          <th>Name</th>
+                          <th>Id</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                      @foreach ($customers as $customer) 
+                        <tr>
+                          <td>
+                            <div class="profile_pic">
+                              <img src="public/{{ $customer->avatar or 'images/profile.png'}}" style="width:60px !important; height:60px;" alt="..." class="img-circle profile_img">
+                            </div>
+                          </td>
+                          <td>{!! $customer->firstname !!} {!! $customer->lastname !!}</td>
+                          <td>{!! $customer->customer_id !!}</td>
+ 
+                        </tr>
+                      @endforeach  
+                      </tbody>
+                    </table>
+                    @endif
+
+                     @if ($user->admin_type == 'Supervisor')
+                    <table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap">
+                      <thead>
+                        <tr>
+                          <th>Avatar</th>
+                          <th>Name</th>
+                          <th>Id</th>
+                          <th>Phone</th>
+                          <th>Email</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                      @foreach ($customers as $customer) 
+                        <tr>
+                          <td>
+                            <div class="profile_pic">
+                              <img src="public/{{ $customer->avatar or 'images/profile.png'}}" style="width:60px !important; height:60px;" alt="..." class="img-circle profile_img">
+                            </div>
+                          </td>
+                          <td>{!! $customer->firstname !!} {!! $customer->lastname !!}</td>
+                          <td>{!! $customer->customer_id !!}</td>
+                          <td>{!! $customer->phone !!}</td>
+                          <td>{!! $customer->email !!}</td>
+ 
+                        </tr>
+                      @endforeach  
+                      </tbody>
+                    </table>
+                    @endif
                   </div>
                 </div>
               </div>

@@ -6,8 +6,11 @@ use Session;
 use File;
 use App\Group;
 use App\Event;
+use App\Subscription;
 use App\GroupPost;
 use App\GroupGallery;
+use App\CustomerGroup;
+use App\AppNotifications;
 use App\Admin;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -28,12 +31,76 @@ class GroupsController extends Controller
         $user = Auth::user();
         $user = Admin::where('admin_id', $user->details_id)->first();
 
-        $groups = DB::table('groups')->join('admins','admins.admin_id','=','groups.group_head_id')->select('admins.name as admin_name', 'groups.*')->orderBy('created_at', 'desc')->get()->toArray();
+        $groups = DB::table('groups')
+        ->join('admins','admins.admin_id','=','groups.group_head_id')
+        ->select('admins.name as admin_name', 'groups.*')
+        ->orderBy('created_at', 'asc')
+        ->get()
+        ->toArray();
 		
-        //$groups = Group::all();
         
         return view('admin_groups')->with(['user'=> $user, 'groups'=> $groups]);
 
+    }
+
+    public function getInterest()
+    {
+        $groups = DB::table('groups')
+        ->select('group_id','name', 'avatar')
+        ->get();
+
+        return $groups;
+    }
+
+    public function myInterest($id)
+    {
+        $myInterest = DB::table('customer_group')
+        ->leftjoin('groups','customer_group.group_id','=','groups.group_id')
+        ->select('groups.name', 'customer_group.customer_id')
+        ->where('customer_group.customer_id', $id)
+        ->get();
+
+        $today = Carbon::now();
+        
+        $sub = Subscription::where('customer_id', $id)->first();
+        if ($sub) {
+                if ($today <= $sub->end_date ) {
+
+                $date = date_create($sub->end_date);
+
+                $new = date_format($date, "F d, Y");
+
+                return response()->json([
+                'error' => false,
+                'customer_interest' => $myInterest,
+                'subscription_details' => $sub,
+                'message' => 'Your Subscription will Expire on'.' '. $new,
+                ]);
+                } 
+                else {
+
+                    $date = date_create($sub->end_date);
+
+                    $new = date_format($date, "F d, Y");
+
+                    return response()->json([
+                    'error' => false,
+                    'customer_interest' => $myInterest,
+                    'subscription_details' => $sub,
+                    'message' => 'Your Subscription expired on '.' '. $new,
+                    ]);
+                }
+
+        } else {
+
+            return response()->json([
+            'error' => false,
+            'customer_interest' => $myInterest,
+            'message' => 'No Subscription',
+
+            ]);
+        }
+    
     }
 
     public function newGroup(){
@@ -73,6 +140,26 @@ class GroupsController extends Controller
         $events = DB::table('events')->where('group_id', $id)->get()->toArray();
 
         return view('admin_group_edit')->with(['user'=> $user, 'group_posts'=>$group_posts, 'events'=> $events, 'members_joined'=> $members_joined, 'gallery'=> $gallery, 'admins'=> $admins, 'group'=> $group]);
+    }
+
+    public function viewGroup($id)
+    {
+       $user = Auth::user();
+       $user = Admin::where('admin_id', $user->details_id)->first();
+
+       $gallery = DB::table('group_gallery')->where('group_id', $id)->get()->toArray();
+
+       $members_joined = DB::table('customer_group')->where('group_id', $id)->join('customers','customers.customer_id','=','customer_group.customer_id')->select('customers.*', 'customers.avatar as customer_avatar', 'customer_group.*')->get()->toArray();
+
+        $group = DB::table('groups')->where('group_id', $id)->join('admins','admins.admin_id','=','groups.group_head_id')->select('admins.name as admin_name', 'groups.*')->first();
+        
+        $group_posts =  DB::table('group_posts')->where('group_posts.group_id', $id)->join('groups','groups.group_id','=','group_posts.group_id')->select('group_posts.*', 'groups.avatar as group_avatar', 'groups.name as group_name')->get()->toArray();
+
+        $events = DB::table('events')->where('group_id', $id)->get()->toArray();
+
+        $admins = Admin::all();
+
+       return view('admin_group_view')->with(['user'=> $user, 'group_posts'=>$group_posts, 'events'=> $events, 'members_joined'=> $members_joined, 'admins'=> $admins, 'group'=> $group, 'gallery'=> $gallery]);
     }
 
     /**
@@ -246,6 +333,19 @@ class GroupsController extends Controller
     
     }
 
+    public function delete($id)
+    {
+        $group = Group::where('group_id', $id)->first();
+
+        if($group->delete()){
+            Session::flash('success', 'Group '.  $group->name . ' has been Deleted Successfully');
+            return back();
+        }else{
+            Session::flash('error', 'An error occured. Could not updated');
+            return back();
+        } 
+    }
+
     /**
      * 
      * Display the specified resource.
@@ -367,5 +467,167 @@ class GroupsController extends Controller
             return response()->json(['error' => true, 'message' => 'Record not found'], 404);
 
         }       
+    }
+
+    public function get_details_group($id, $customer_id)
+    {
+        $group = Group::where('group_id', $id)->first();
+
+        $gallery = GroupGallery::where('group_id', $id)
+        ->select('id', 'avatar as image')
+        ->get();
+
+        $group_posts = GroupPost::where('group_id', $id)
+        ->get();
+
+        $group_events = Event::where('group_id', $id)
+        ->select('date as start', 'end_date as end', 'name as text', 'bgcolor as background')
+        ->get();
+
+        $members = DB::table('customer_group')
+        ->select('customer_group.*')
+        ->where([ ['group_id', $id],
+            ['customer_id', $customer_id],
+        ])
+        ->first();
+
+        if ($members) {
+
+            $status = $members->status;
+        }elseif (!$members) {
+            $status = 0;
+        }
+
+        if ($gallery->isEmpty()){
+
+            $gallery = null;
+        }
+
+        if ($group_posts->isEmpty()) {
+
+            $group_posts = null;
+        } 
+        
+        if ($group_events->isEmpty()) {
+
+            $group_events = null;
+        } 
+
+        return response()->json([
+            'error' => false,
+            'group' => $group,
+            'gallery' => $gallery,
+            'posts' => $group_posts,
+            'activities' => $group_events,
+            'status' => $status
+         ]);
+    }
+
+    public function be_a_member($id, $customer_id)
+    {
+        $new_member = new CustomerGroup;
+
+        $new_member->customer_id = $customer_id;
+
+        $new_member->group_id = $id;
+
+        $new_member->status = 1;
+
+        if ($new_member->save()) {
+
+            $userInterest = DB::table('customer_group')
+                ->join('groups', 'groups.group_id', '=', 'customer_group.group_id')
+                ->select('customer_group.group_id', 'groups.name', 'groups.avatar')
+                ->where('customer_group.customer_id', $customer_id)
+                ->get();
+
+            return response()->json([
+                'error' => false,
+                'message' => 'You are now a member',
+                'status' => $new_member->status,
+                'interest' => $userInterest
+            ]);
+
+        } else {
+
+            $status = 0;
+
+            $userInterest = DB::table('customer_group')
+                ->join('groups', 'groups.group_id', '=', 'customer_group.group_id')
+                ->select('customer_group.group_id', 'groups.name', 'groups.avatar')
+                ->where('customer_group.customer_id', $customer_id)
+                ->get();
+
+            return response()->json([
+                'error' => true,
+                'message' => 'Ooops!!! We cant add you to the group at the moment',
+                'status' => $status,
+                'interest' => $userInterest
+            ]);
+
+        }
+        
+    }
+
+    public function leave_a_group($id, $customer_id)
+    {
+        $member_out = DB::table('customer_group')
+            ->where([
+                ['customer_id', '=', $customer_id],
+                ['group_id', '=', $id],
+            ]);
+            $get_group_name = Group::where('group_id', $id)->first();
+
+            $name = $get_group_name->name;
+
+            $delete = $member_out->first();
+
+            if ($member_out->delete()) {
+
+                $notification = new AppNotifications;
+
+                $notification->customer_id = $customer_id;
+
+                $notification->message = 'We noticed you left the '. $name.' Interest Group and we would like to know why. Kindly send us an email at info@theaffinityclub.com to help us improve our services. Thank you.';
+
+                $notification->status = 1;
+
+                $notification->save();
+
+                $status = 0;
+
+                $userInterest = DB::table('customer_group')
+                ->join('groups', 'groups.group_id', '=', 'customer_group.group_id')
+                ->select('customer_group.group_id', 'groups.name', 'groups.avatar')
+                ->where('customer_group.customer_id', $customer_id)
+                ->get();
+
+                return response()->json([
+                    'error' => false,
+                    'message' => 'You are no longer a participant',
+                    'status' => $status,
+                    'interest' => $userInterest
+
+                ]);
+
+            } else {
+                 $status = 0;
+
+                 $userInterest = DB::table('customer_group')
+                ->join('groups', 'groups.group_id', '=', 'customer_group.group_id')
+                ->select('customer_group.group_id', 'groups.name', 'groups.avatar')
+                ->where('customer_group.customer_id', $customer_id)
+                ->get();
+
+                return response()->json([
+
+                    'error' => true,
+                    'message' => 'You are not a member',
+                    'status' => $status,
+                    'interest' => $userInterest
+                ]);
+
+            }
+            
     }
 }

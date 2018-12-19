@@ -13,16 +13,21 @@
     @include("includes.admin-index-head")
     <script>
       function getStates(){
-        console.log(document.getElementById('country').value);
+        console.log(document.getElementById('country_id').value);
             $.post("get_state",
             {
-                country: document.getElementById('country').value
+                country_id: document.getElementById('country_id').value
             },
             function(data, status){
               console.log(data);
+
+              $('#state').find('option').not(':first').remove();
+
               $.each(data.states, function(i, d) {
-                $('#state').append('<option value="' + d.state + '">' + d.state + '</option>');
+                $('#state').append('<option value="' + d.name + '">' + d.name + '</option>');
               });
+
+              
             });
       }
     </script>
@@ -81,23 +86,12 @@
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Category</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
                           <select class="select2_single form-control" id="category" name="category" tabindex="-1">
-                            <option>Appartments</option> 
-                            <option>Villas</option> 
-                            <option>Beach House</option>
-                            <option>Boats</option>
-                            <option>Yatch</option>
-                            <option>Cars</option> 
-                            <option>Chaffeur</option>
-                            <option>Private Jets</option>   
+                            @foreach ($categories as $category)
+                            <option value="{{$category->category_id}}">{{$category->cate_title}}</option> 
+                            @endforeach
+                              
                           </select>  
                           <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Overview</label>
-                        <div class="col-md-9 col-sm-9 col-xs-9">
-                          <input type="text" name="overview" class="form-control" required>
-                          <span class="fa fa-tag form-control-feedback right" aria-hidden="true"></span>
                         </div>
                       </div>  
                       <div class="form-group">
@@ -118,19 +112,44 @@
                           </div>
                         </div>
                       </fieldset> 
+
+                      <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Currency</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <select class="select2_single form-control" name="curr" tabindex="-1">
+                            <option>USD</option> 
+                            <option>NGN</option>
+                          </select>  
+                        </div>
+                      </div> 
+
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Price</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <input type="number" name="price" class="form-control" required>
+                          <input type="text" name="price" class="form-control number" required>
                           <span class="fa fa-card form-control-feedback right" aria-hidden="true"></span>
                         </div>
-                      </div>  
+                      </div> 
+
+                      <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Validity</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <select class="select2_single form-control" name="validity" tabindex="-1">
+                            <option>Per Day</option> 
+                            <option>Per Week</option>
+                            <option>Per Month</option>
+                            <option>Per Year</option>
+                          </select>  
+                        </div>
+                      </div> 
+
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Country</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <select class="select2_single form-control" onchange="getStates()" id="country" name="country" tabindex="-1">
+                          <select class="select2_single form-control" onchange="getStates()" id="country_id" name="country" tabindex="-1">
+                            <option>Select Country</option>
                             @foreach ($countries as $country) 
-                            <option value="{{$country->country}}">{{$country->country}}</option> 
+                            <option value="{{$country->id}}">{{$country->name}}</option> 
                             @endforeach
                           </select>  
                           <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
@@ -140,9 +159,7 @@
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">State</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
                           <select class="select2_single form-control" id="state"  name="state" tabindex="-1">
-                            {{--@foreach ($states as $state) 
-                            <option value="{{$state->state}}">{{$state->state}}</option> 
-                            @endforeach --}}
+                            <option> Select States </option>
                           </select>  
                           <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
                         </div>
@@ -172,7 +189,7 @@
 
                       <div class="form-group">
                         <div class="col-md-9 col-md-offset-3">
-                          <button type="submit" class="btn btn-primary">Cancel</button>
+                          <a href="../admin_rentals" class="btn btn-default">Cancel</a>
                           <button type="submit" class="btn btn-success">Submit</button>
                         </div>
                       </div>
@@ -198,4 +215,15 @@
     </div>
     @include("includes.admin-index-footer-script")
   </body>
+
+  <script>
+      var el = document.querySelector('input.number');
+
+      el.addEventListener('keyup', function(event){
+        if (event.which >= 37 && event.which <= 40) 
+          return;
+
+        this.value = this.value.replace(/\D/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,',');
+      });
+    </script>
 </html>

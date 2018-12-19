@@ -76,7 +76,8 @@
                           <td>{!! $bespoke_product->category_name !!}</td>
                           <td>{!! $bespoke_product->price !!}</td>
                           <td>{!! $bespoke_product->created_at !!}</td>
-                          <td><a class="btn btn-default btn-success source" href="admin_bespoke_product_edit/{!! $bespoke_product->id !!}"><i class="fa fa-pencil"></i>Edit</a></td>
+                          <td><a class="btn btn-default btn-success source" href="admin_bespoke_product_edit/{!! $bespoke_product->id !!}"><i class="fa fa-pencil"></i></a>
+                          <a class="btn btn-default btn-danger source" href="admin_bespoke_product_delete/{!! $bespoke_product->id !!}"><i class="fa fa-trash"></i></a></td>
                         </tr>
                       @endforeach  
                       </tbody>

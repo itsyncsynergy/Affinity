@@ -71,7 +71,7 @@
                         <tr>
                           <td>
                             <div class="profile_pic">
-                              <img src="public/{{ $experience->avatar or 'images/profile.png'}}" style="width:60px !important; height:60px;" alt="..." class="img-circle profile_img">
+                              <img src="{{ $experience->avatar or 'images/profile.png'}}" style="width:60px !important; height:60px;" alt="..." class="img-circle profile_img">
                             </div>
                           </td>
                           <td>{!! $experience->experience_name !!}</td>
@@ -81,8 +81,9 @@
                           <td>{!! $experience->price !!}</td>
                           <td>{!! $experience->experience_start_date !!} to {!! $experience->experience_end_date !!}</td>
                           <td>
-                            <a class="btn btn-default btn-success source" href="admin_luxury_experience_edit/{!! $experience->experience_id !!}"><i class="fa fa-pencil"></i>Edit</a>
+                            <a class="btn btn-default btn-success source" href="admin_luxury_experience_edit/{!! $experience->experience_id !!}"><i class="fa fa-pencil"></i></a>
                             <button class="btn btn-default btn-success source" onclick='openMyModal(<?php echo json_encode($experience); ?>)' ><i class="fa fa-eye"></i></button>
+                            <a class="btn btn-default btn-danger" href="admin_luxury_experience_delete/{!! $experience->experience_id !!}"><i class="fa fa-trash"></i></a>
                           </td>
                         </tr>
                       @endforeach  
@@ -118,6 +119,8 @@
         document.getElementById('body-3').innerHTML = data.overview; 
         document.getElementById('body-4').innerHTML = data.ntk;
       }
+
+
     </script>
 
     <button type="hidden" id="modal-button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
@@ -153,4 +156,6 @@
       </div>
 
     </div>
+  </div>
+
 </html>

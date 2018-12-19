@@ -54,7 +54,7 @@
                     <div class="clearfix"></div>
                   </div>
                   <div class="x_content">
-                    <form class="form-horizontal form-label-left" method="post" action="admin_merchant_categories_store">
+                    <form class="form-horizontal form-label-left" enctype="multipart/form-data" method="post" action="admin_merchant_categories_store">
 
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Name</label>
@@ -62,7 +62,15 @@
                           <input type="text" name="name" class="form-control" required>
                           <span class="fa fa-user form-control-feedback right" aria-hidden="true"></span>
                         </div>
-                      </div>                      
+                      </div>   
+
+                      <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Avatar</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <input type="file" class="form-control"  name="avatar" required>
+                          <span class="fa fa-file-image-o form-control-feedback right" aria-hidden="true"></span>
+                        </div>
+                      </div>                   
                       
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Remarks</label>

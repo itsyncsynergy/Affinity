@@ -72,7 +72,7 @@
                                     $pending++;
                                   }
                                 }  
-                                echo ($pending/count($bespoke_product_requests)) * 100 ;?>%">
+                                echo $pending == 0 ? 0 : ($pending/count($bespoke_product_requests)) * 100 ;?>%">
                                 <span class="sr-only">
                                   0
                                 </span>
@@ -109,7 +109,7 @@
                                     $in_progress++;
                                   }
                                 }  
-                                echo ($in_progress/count($bespoke_product_requests)) * 100 ;?>%">
+                                echo $in_progress == 0 ? 0 : ($in_progress/count($bespoke_product_requests)) * 100 ;?>%">
                                 <span class="sr-only">50% Complete</span>
                               </div>
                             </div>
@@ -143,7 +143,7 @@
                                     $resolved++;
                                   }
                                 }  
-                                echo ($resolved/count($bespoke_product_requests)) * 100 ;?>%">
+                                echo $resolved == 0 ? 0 : ($resolved/count($bespoke_product_requests)) * 100 ;?>%">
                                 <span class="sr-only">50% Complete</span>
                               </div>
                             </div>
@@ -177,7 +177,7 @@
                                     $unresolved++;
                                   }
                                 }  
-                                echo ($unresolved/count($bespoke_product_requests)) * 100 ;?>%">
+                                echo $unresolved == 0 ? 0 : ($unresolved/count($bespoke_product_requests)) * 100 ;?>%">
                                 <span class="sr-only">50% Complete</span>
                               </div>
                             </div>

@@ -1769,7 +1769,7 @@ if (typeof NProgress != 'undefined') {
 			});
 
 			$('#reservation-time').daterangepicker({
-			  timePicker: true,
+			  timePicker: false,
 			  timePickerIncrement: 30,
 			  locale: {
 				format: 'MM/DD/YYYY h:mm A'

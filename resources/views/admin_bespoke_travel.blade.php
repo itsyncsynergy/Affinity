@@ -68,7 +68,7 @@
                                     $pending++;
                                   }
                                 }  
-                                echo ($pending/count($bespoke_travel)) * 100 ;?>%">
+                                echo $pending == 0 ? 0 : ($pending/count($bespoke_travel)) * 100 ;?>%">
                                 <span class="sr-only">
                                   0
                                 </span>
@@ -105,7 +105,7 @@
                                     $in_progress++;
                                   }
                                 }  
-                                echo ($in_progress/count($bespoke_travel)) * 100 ;?>%">
+                                echo $in_progress == 0 ? 0 : ($in_progress/count($bespoke_travel)) * 100 ;?>%">
                                 <span class="sr-only">50% Complete</span>
                               </div>
                             </div>
@@ -139,7 +139,7 @@
                                     $completed++;
                                   }
                                 }  
-                                echo ($completed/count($bespoke_travel)) * 100 ;?>%">
+                                echo $completed == 0 ? 0 : ($completed/count($bespoke_travel)) * 100 ;?>%">
                                 <span class="sr-only">60% Complete</span>
                               </div>
                             </div>

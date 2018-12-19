@@ -67,5 +67,41 @@ class VpasController extends Controller
 
     }
 
+    public function postRequest(Request $request)
+    {
+        $vpa = new Vpa;
+
+        $vpa->customer_id = $request->input('customer_id');
+
+        $vpa->service = $request->input('service');
+
+        $vpa->description = $request->input('desc');
+
+        $vpa->delivery_date = $request->input('date');
+
+        $vpa->delivery_time = $request->input('time');
+
+        $vpa->phone = $request->input('phone');
+
+        $vpa->contact_means = $request->input('contact_means');
+
+        $vpa->status = 'Pending';
+
+        if ($vpa->save()) {
+            
+            return response()->json([
+                'error' => false,
+                'message' => 'Request Sent Successfully'
+            ]);
+        } else {
+
+            return response()->json([
+                'error' => true,
+                'message' => 'Something Went Wrong'
+            ]);
+        }
+        
+    }
+
 
 }

@@ -68,8 +68,8 @@
                                     $pending++;
                                   }
                                 }  
-                                if(count($requests > 0)){
-                                  echo ($pending/count($requests)) * 100 ;
+                                if(@count($requests > 0)){
+                                  echo $pending == 0 ? 0 : ($pending/count($requests)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">
                                   0
@@ -107,8 +107,8 @@
                                     $in_progress++;
                                   }
                                 } 
-                                if(count($requests > 0)){ 
-                                  echo ($in_progress/count($requests)) * 100 ;
+                                if(@count($requests > 0)){ 
+                                  echo $in_progress == 0 ? 0 : ($in_progress/count($requests)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">50% Complete</span>
                               </div>
@@ -143,8 +143,8 @@
                                     $resolved++;
                                   }
                                 } 
-                                if(count($requests > 0)){ 
-                                  echo ($resolved/count($requests)) * 100 ;
+                                if(@count($requests > 0)){ 
+                                  echo $resolved == 0 ? 0 : ($resolved/count($requests)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">60% Complete</span>
                               </div>
@@ -180,8 +180,8 @@
                                     $unresolved++;
                                   }
                                 } 
-                                if(count($requests > 0)){ 
-                                  echo ($unresolved/count($requests)) * 100 ;
+                                if(@count($requests > 0)){ 
+                                  echo $unresolved == 0 ? 0 : ($unresolved/count($requests)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">60% Complete</span>
                               </div>

@@ -68,7 +68,7 @@
                                     $pending++;
                                   }
                                 }  
-                                echo ($pending/count($airport_concierge)) * 100 ;?>%">
+                                echo $pending == 0 ? 0 : ($pending/count($airport_concierge)) * 100 ;?>%">
                                 <span class="sr-only">
                                   0
                                 </span>
@@ -105,7 +105,7 @@
                                     $in_progress++;
                                   }
                                 }  
-                                echo ($in_progress/count($airport_concierge)) * 100 ;?>%">
+                                echo $in_progress == 0 ? 0 : ($in_progress/count($airport_concierge)) * 100 ;?>%">
                                 <span class="sr-only">50% Complete</span>
                               </div>
                             </div>
@@ -139,7 +139,7 @@
                                     $resolved++;
                                   }
                                 }  
-                                echo ($resolved/count($airport_concierge)) * 100 ;?>%">
+                                echo $resolved == 0 ? 0 : ($resolved/count($airport_concierge)) * 100 ;?>%">
                                 <span class="sr-only">60% Resolved</span>
                               </div>
                             </div>
@@ -175,7 +175,7 @@
                                     $unresolved++;
                                   }
                                 }  
-                                echo ($unresolved/count($airport_concierge)) * 100 ;?>%">
+                                echo $unresolved == 0 ? 0 : ($unresolved/count($airport_concierge)) * 100 ;?>%">
                                 <span class="sr-only">60% Unresolved</span>
                               </div>
                             </div>

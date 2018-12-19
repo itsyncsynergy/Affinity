@@ -21,7 +21,7 @@ class MerchantCategoriesController extends Controller
         $user = Auth::user();
         $user = Admin::where('admin_id', $user->details_id)->first();
 		
-        $categories = MerchantCategory::orderBy('category_id', 'desc')->get();
+        $categories = MerchantCategory::orderBy('order_id', 'asc')->get();
 
         return view('admin_merchant_categories')->with(['user'=> $user, 'categories'=> $categories]);
     }
@@ -60,6 +60,19 @@ class MerchantCategoriesController extends Controller
 
         $category->remarks = $request->input('remarks');
 
+        $avatar = $request->file('avatar'); 
+        
+        $extension = $avatar->extension();
+
+        $filename = time();
+
+        $path = 'images/'.$filename.'.'.$extension;
+
+        move_uploaded_file($avatar, public_path($path));
+            
+        $category->avatar = $path;
+
+
         if($category->save()){
             Session::flash('success', $category->name . ' has been created');
             return back();
@@ -67,6 +80,56 @@ class MerchantCategoriesController extends Controller
             Session::flash('error', 'An error occured. Could not create category');
             return back();
         }  
+    }
+
+    public function updateNew(Request $request)
+    {
+        $category = MerchantCategory::where('category_id', $request->input('category_id'))->first();
+
+        $category->order_id = $request->input('order_id');
+
+        $category->name = $request->input('name');
+
+        $category->remarks = $request->input('remarks');
+
+        if($request->hasFile('avatar')){
+            $avatar = $request->file('avatar'); 
+            
+            $extension = $avatar->extension();
+
+            $filename = time();
+
+            $path = 'images/'.$filename.'.'.$extension;
+
+            move_uploaded_file($avatar, public_path($path));
+            
+             $category->avatar = $path;
+        }
+        
+        if($category->save()){
+            Session::flash('success', $category->name . ' has been updated');
+            return back();
+        }else{
+            Session::flash('error', 'An error occured. Could not create category');
+            return back();
+        } 
+
+
+    }
+
+    public function delete($id)
+    {
+        $category = MerchantCategory::where('category_id', $id)->first();
+
+        if ($category->delete()) {
+
+           Session::flash('success', 'Category Deleted successfully');
+           return back();
+        }else{
+
+            Session::flash('error', 'Category Couldnt be deleted');
+            return back();
+        }
     }
 
     /**
@@ -101,7 +164,12 @@ class MerchantCategoriesController extends Controller
      */
     public function edit($id)
     {
-        //
+        $user = Auth::user();
+        $user = Admin::where('admin_id', $user->details_id)->first();
+
+        $categories = MerchantCategory::where('category_id', $id)->get();
+
+        return view('admin_merchant_category_edit')->with(['user'=> $user, 'categories' => $categories]);
     }
 
     /**

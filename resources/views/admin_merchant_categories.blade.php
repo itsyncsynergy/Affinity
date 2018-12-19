@@ -54,8 +54,10 @@
                     <table id="datatable-buttons" class="table table-striped table-bordered">
                       <thead>
                         <tr>
+                          <th>Avatar</th>
                           <th>Name</th>
                           <th>Remarks</th>
+                          <th>Action</th>
                         </tr>
                       </thead>
 
@@ -63,8 +65,16 @@
                       <tbody>
                       @foreach ($categories as $category) 
                         <tr>
+                          <td>
+                            <img src="{{$category->avatar}}" alt="" style="width: 80px; height: 60px;" class="img-rounded">
+                          </td>
                           <td>{!! $category->name !!}</td>
                           <td>{!! $category->remarks !!}</td>
+                          <td>
+                            <a class="btn btn-default btn-danger source" href="admin_merchant_categories_delete/{!! $category->category_id !!}"><i class="fa fa-trash"></i></a>
+
+                            <a class="btn btn-default btn-success source" href="admin_merchant_categories_edit/{!! $category->category_id !!}"><i class="fa fa-pencil"></i></a>
+                          </td>
                         </tr>
                       @endforeach  
                       </tbody>
@@ -90,4 +100,5 @@
     @include("includes.admin-index-footer-script")
     
   </body>
+
 </html>

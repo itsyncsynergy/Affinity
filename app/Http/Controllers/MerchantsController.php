@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use File;
 use Session;
 use App\User;
+use App\Countries;
 use App\Location;
 use App\Merchant;
 use App\MerchantOffer;
@@ -40,12 +41,20 @@ class MerchantsController extends Controller
         $user = Admin::where('admin_id', $user->details_id)->first();
 
         $categories = MerchantCategory::orderBy('category_id', 'desc')->get();
-        $states = Location::where('country', 'Nigeria')->select('state')->distinct()->get();
+        // $states = Location::where('country', 'Nigeria')->select('state')->distinct()->get();
        
-        $countries = Location::distinct()->get(['country']);
+        $countries = Countries::all();
 
         return view('admin_merchant_new')->with(['user'=> $user, 'categories'=> $categories, 'countries'=> $countries]);
     }
+
+    // public function getState(Request $request){
+    
+    //     $states = States::where('country_id', $request->input('country_id'))->orderBy('id', 'asc')->get()->toArray();
+
+    //     return response()->json(['error' => false, 'states' => $states],200);
+    
+    // }
 
 
     /**
@@ -87,6 +96,10 @@ class MerchantsController extends Controller
 
         $merchant->contact = $request->input('contact');
 
+        $merchant->contact2 = $request->input('contact2');
+
+        $merchant->contact3 = $request->input('contact3');
+
         $merchant->email = $request->input('email');
 
         $merchant->website = $request->input('website');
@@ -107,6 +120,8 @@ class MerchantsController extends Controller
         
         $merchant->longitude = $request->input('longitude');
 
+        $merchant->type = $request->input('type');
+
         //$merchant->avatar = $request->input('avatar'); // create a method to handle image upload...
 
         //$merchant->verification_pin = generateDefaultPin();
@@ -125,10 +140,22 @@ class MerchantsController extends Controller
         move_uploaded_file($avatar, public_path($path));
         
         $merchant->avatar = $path;
+
+        $headerImage = $request->file('headerImage'); 
+
+        $merchant->headerImage = $request->input('headerImage');
+
+        $ext = $headerImage->extension();
+
+        $fname = time();
+
+        $newpath = 'images/'. $fname.'.'.$extension;
+
+        move_uploaded_file($headerImage, public_path($newpath));
         
+        $merchant->headerImage = $newpath;
         
-        
-        
+
         //return response()->json(['error' => true, 'message' => 'no image'],400);
         
     
@@ -167,9 +194,19 @@ class MerchantsController extends Controller
         $user = Auth::user();
         $user = Admin::where('admin_id', $user->details_id)->first();
 
-        $merchant = Merchant::where('id', $id)->first();
-        $countries = Location::distinct()->get(['country']);
-        $offers = DB::table('merchant_offers')->where('merchant_id', $merchant->merchant_id)->get()->toArray();
+        // $merchant = Merchant::where('id', $id)->first();
+        $merchant = DB::table('merchants')
+        ->join('merchant_categories', 'merchants.category_id', '=', 'merchant_categories.category_id')
+        ->select('merchants.*', 'merchant_categories.name as categoryName', 'merchant_categories.category_id as categoryID')
+        ->where('merchants.id', $id)
+        ->first();
+        
+        $countries = DB::table('countries')
+        ->join('merchants', 'countries.name', '=', 'merchants.country')
+        ->select('merchants.*', 'countries.name')
+        ->where('merchants.id', $id)
+        ->get();
+        $offers = DB::table('merchant_offers')->where('merchant_id', $merchant->merchant_id)->get();
         $categories = MerchantCategory::orderBy('category_id', 'desc')->get();
         $states = Location::select('state')->distinct()->get();
 
@@ -257,6 +294,10 @@ class MerchantsController extends Controller
         $merchant->address = $request->input('address');
 
         $merchant->contact = $request->input('contact');
+
+        $merchant->contact2 = $request->input('contact2');
+
+        $merchant->contact3 = $request->input('contact3');
         
         $merchant->email = $request->input('email');
 
@@ -277,6 +318,8 @@ class MerchantsController extends Controller
         $merchant->latitude = $request->input('latitude');
         
         $merchant->longitude = $request->input('longitude');
+
+        $merchant->type = $request->input('type');
           
         if($request->hasFile('avatar')){
            $avatar = $request->file('avatar'); 
@@ -315,9 +358,23 @@ class MerchantsController extends Controller
         File::delete(public_path().'/images'.$merchant->avatar);
 
         Session::flash('success', 'Image has been successfully deleted');
+
             return back();
     
     }
+
+    public function delete($id)
+    {
+       $merchant = Merchant::where('id', $id)->first();
+
+        if($merchant->delete()){
+            Session::flash('success', 'Record has been Deleted Successfully');
+            return back();
+        }else{
+            Session::flash('error', 'An error occured. Could not updated');
+            return back();
+        } 
+    } 
 
     /**
      * Remove the specified resource from storage.

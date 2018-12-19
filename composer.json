@@ -7,8 +7,12 @@
     "require": {
         "php": ">=5.6.4",
         "barryvdh/laravel-dompdf": "^0.8.2",
+        "berkayk/onesignal-laravel": "^1.0",
         "laravel/framework": "5.4.*",
         "laravel/tinker": "~1.0",
+        "tinify/tinify": "^1.5",
+        "tymon/jwt-auth": "^0.5.12",
+        "unicodeveloper/laravel-paystack": "^1.0",
         "unisharp/laravel-ckeditor": "^4.7"
     },
     "require-dev": {

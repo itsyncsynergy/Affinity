@@ -6,6 +6,7 @@ use Session;
 use File;
 use App\LuxuryExperience;
 use App\LuxuryExperienceGallery;
+use App\Countries;
 use App\Location;
 use App\Merchant;
 use App\Admin;
@@ -38,7 +39,7 @@ class LuxuryExperiencesController extends Controller
 
         $states = Location::where('country', 'Nigeria')->select('state')->orderBy('state', 'asc')->distinct()->get();
 
-        $countries = Location::distinct()->get(['country']);
+        $countries = Countries::all();
 
         return view('admin_luxury_experience_new')->with(['user'=> $user, 'countries'=> $countries]);
     }
@@ -50,7 +51,11 @@ class LuxuryExperiencesController extends Controller
         $user = Admin::where('admin_id', $user->details_id)->first();
         
         $members_joined = DB::table('customer_luxury_experiences')->where('experience_id', $id)->join('customers','customers.customer_id','=','customer_luxury_experiences.customer_id')->select('customers.*', 'customers.avatar as customer_avatar', 'customer_luxury_experiences.*')->get()->toArray();
-        $countries = Location::distinct()->get(['country']);
+        $countries = DB::table('countries')
+        ->join('luxury_experiences', 'countries.id', '=', 'luxury_experiences.country')
+        ->select('luxury_experiences.*', 'countries.name')
+        ->where('experience_id', $id)
+        ->get();
 
         $experience = LuxuryExperience::where('experience_id', $id)->first();
 		
@@ -83,6 +88,8 @@ class LuxuryExperiencesController extends Controller
 
         $experience->price = $request->input('price');
 
+        $experience->curr = $request->input('curr');
+
         $experience->overview = $request->input('overview');
 
         $experience->details = $request->input('details');
@@ -97,9 +104,9 @@ class LuxuryExperiencesController extends Controller
 
         
 
-        $experience->experience_start_date = substr( $request->input('date'), 0, strrpos($request->input('date'), '-' ) );
+        $experience->experience_start_date = substr( $request->input('date'), 0,10 );
 
-        $experience->experience_end_date = substr($request->input('date'), strpos($request->input('date'), "-") + 1);
+        $experience->experience_end_date = substr($request->input('date'), 13,21 + 1);
 
         $avatar = $request->file('avatar'); // create method to handle this section...
         
@@ -122,6 +129,19 @@ class LuxuryExperiencesController extends Controller
             Session::flash('error', 'An error occured. Could not create experience');
             return back();
         }  
+    }
+
+    public function delete($id)
+    {
+       $experience = LuxuryExperience::where('experience_id', $id)->first();
+
+        if($experience->delete()){
+            Session::flash('success', 'Group '.  $experience->name . ' has been Deleted Successfully');
+            return back();
+        }else{
+            Session::flash('error', 'An error occured. Could not updated');
+            return back();
+        } 
     }
     
 
@@ -191,6 +211,8 @@ class LuxuryExperiencesController extends Controller
 
         $experience->price = $request->input('price');
 
+        $experience->curr = $request->input('curr');
+
         $experience->overview = $request->input('overview');
 
         $experience->details = $request->input('details');
@@ -204,10 +226,9 @@ class LuxuryExperiencesController extends Controller
         $experience->venue = $request->input('venue');
 
         
+        $experience->experience_start_date = substr( $request->input('date'), 0,10 );
 
-        $experience->experience_start_date = substr( $request->input('date'), 0, strrpos($request->input('date'), '-' ) );
-
-        $experience->experience_end_date = substr($request->input('date'), strpos($request->input('date'), "-") + 1);
+        $experience->experience_end_date = substr($request->input('date'), 13,21 + 1);
 
         if($request->hasFile('avatar')){
             $avatar = $request->file('avatar'); 
@@ -339,5 +360,50 @@ class LuxuryExperiencesController extends Controller
             return back();
         }  
 
+    }
+
+    public function getTravel()
+    {
+        $luxury = DB::table('luxury_experiences')
+        ->select('experience_id as category_id', 'experience_name as cate_title','avatar','price', 'overview', 'ntk', 'details', 'venue', 'state')
+        ->get();
+
+
+        return $luxury;
+    }
+
+    public function getSingle($id)
+    {
+        $luxury = LuxuryExperience::where('experience_id', $id)->first();
+
+        $gallery = LuxuryExperienceGallery::where('experience_id', $id)
+        ->select('id', 'avatar as image')
+        ->get();
+
+        $gimage = LuxuryExperienceGallery::where('experience_id', $id)
+        ->select('avatar as images')
+        ->first();
+
+        if ($gallery->isEmpty()) {
+            
+                $gallery = null;       
+
+        } 
+
+        if ($gimage) {
+            $gimage = $gimage->images;
+        } else {
+           $gimage = null;
+        }
+        
+
+        return response()->json([
+            'error' => false,
+            'code' => 200,
+            'packages' => $luxury,
+            'gimage' => $gimage,
+            'gallery' => $gallery,
+            
+        ]);
     }
 }

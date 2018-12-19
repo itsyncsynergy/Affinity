@@ -71,8 +71,8 @@
                                     $pending++;
                                   }
                                 }  
-                                if(count($events > 0)){
-                                  echo ($pending/count($events)) * 100 ;
+                                if(@count($events > 0)){
+                                  echo $pending == 0 ? 0 : ($pending/count($events)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">
                                   0
@@ -110,8 +110,8 @@
                                     $in_progress++;
                                   }
                                 }
-                                if(count($events > 0)){  
-                                  echo ($in_progress/count($events)) * 100 ;
+                                if(@count($events > 0)){  
+                                  echo $in_progress == 0 ? 0 : ($in_progress/count($events)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">50% Complete</span>
                               </div>
@@ -146,8 +146,8 @@
                                     $resolved++;
                                   }
                                 }  
-                                if(count($events > 0)){
-                                  echo ($resolved/count($events)) * 100 ;
+                                if(@count($events > 0)){
+                                  echo $resolved == 0 ? 0 : ($resolved/count($events)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">60% Complete</span>
                               </div>
@@ -184,8 +184,8 @@
                                     $unresolved++;
                                   }
                                 }  
-                                if(count($events > 0)){
-                                  echo ($unresolved/count($events)) * 100 ;
+                                if(@count($events > 0)){
+                                  echo $unresolved == 0 ? 0 : ($unresolved/count($events)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">60% Complete</span>
                               </div>

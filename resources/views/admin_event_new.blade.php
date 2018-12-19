@@ -73,19 +73,51 @@
                           </select>  
                           <span class="fa fa-user form-control-feedback right" aria-hidden="true"></span>
                         </div>
-                      </div>                     
+                      </div>
+                      <div class="form-group" >   
+                      <label class="control-label col-md-3 col-sm-3 col-xs-3">Tags</label>                  
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                          @foreach ($tags as $tag)
+                          <div class="col-md-2">
+                          <div class="checkbox">
+                            <label>
+                              <input type="checkbox" name="tag_id[]" value="{{$tag->group_id}}"> {{$tag->name}}
+                            </label>
+                          </div>
+                          </div>
+                          @endforeach
+                        </div>
+                      </div>   
                       <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Interest Group </label>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Currency </label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <select class="select2_single form-control"  name="group_id" tabindex="-1" required>
-                          <option disabled>Select Group</option>
-                            @foreach ($groups as $group) 
-                            <option value="{{$group->group_id}}">{{$group->name}}</option> 
-                            @endforeach
+                          <select class="select2_single form-control"  name="curr" tabindex="-1" required>
+                            <option disabled>Select Type</option>
+                            <option>USD</option> 
+                            <option>Naira</option> 
                           </select>  
                           <span class="fa fa-user form-control-feedback right" aria-hidden="true"></span>
                         </div>
                       </div>
+                      <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Amount</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <input type="text" name="price" class="form-control number">
+                          <span class="fa fa-money form-control-feedback right" aria-hidden="true"></span>
+                        </div>
+                      </div>                    
+                      <div class="form-group" >   
+                      <label class="control-label col-md-3 col-sm-3 col-xs-3">Target Members</label>                  
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                          @foreach ($groups as $group)
+                          <div class="checkbox">
+                            <label>
+                              <input type="checkbox" name="group_id[]" value="{{$group->group_id}}"> {{$group->name}}
+                            </label>
+                          </div>
+                          @endforeach
+                        </div>
+                      </div> 
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Location</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
@@ -96,7 +128,7 @@
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Capacity</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <input type="number" name="capacity" class="form-control" required>
+                          <input type="text" name="capacity" class="form-control number" required>
                           <span class="fa fa-tag form-control-feedback right" aria-hidden="true"></span>
                         </div>
                       </div>  
@@ -114,14 +146,14 @@
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Avatar</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <input type="file" class="form-control"  name="avatar" required>
+                          <input type="file" class="form-control"  name="avatar">
                           <span class="fa fa-file-image-o form-control-feedback right" aria-hidden="true"></span>
                         </div>
                       </div>
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Description</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <textarea type="text" name="description" class="resizable_textarea form-control" required placeholder="Details here..."></textarea>
+                          <textarea type="text" rows="10" name="description" class="resizable_textarea form-control"placeholder="Details here..."></textarea>
                         </div>
                       </div>
                       
@@ -129,7 +161,7 @@
 
                       <div class="form-group">
                         <div class="col-md-9 col-md-offset-3">
-                          <button type="submit" class="btn btn-primary">Cancel</button>
+                          <a href="../admin_events" class="btn btn-default">Cancel</a>
                           <button type="submit" class="btn btn-success">Submit</button>
                         </div>
                       </div>
@@ -144,6 +176,7 @@
         <!-- /page content -->
 
         <!-- footer content -->
+
         <footer>
           <div class="pull-right">
             The AffinityClub
@@ -154,5 +187,15 @@
       </div>
     </div>
     @include("includes.admin-index-footer-script")
+    <script>
+      var el = document.querySelector('input.number');
+
+      el.addEventListener('keyup', function(event){
+        if (event.which >= 37 && event.which <= 40) 
+          return;
+
+        this.value = this.value.replace(/\D/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,',');
+      });
+    </script>
   </body>
 </html>

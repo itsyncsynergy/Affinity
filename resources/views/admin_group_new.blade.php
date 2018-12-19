@@ -84,7 +84,7 @@
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Details</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <textarea type="text" name="details" class="resizable_textarea form-control" required placeholder="Details here..."></textarea>
+                          <textarea type="text" name="details" id="details"></textarea>
                         </div>
                       </div>
                       

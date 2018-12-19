@@ -71,7 +71,7 @@
                                     $pending++;
                                   }
                                 }  
-                                if(count($events > 0)){
+                                if(@count($events > 0)){
                                   echo ($pending/count($events)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">
@@ -110,7 +110,7 @@
                                     $in_progress++;
                                   }
                                 } 
-                                if(count($events > 0)){ 
+                                if(@count($events > 0)){ 
                                   echo ($in_progress/count($events)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">50% Complete</span>
@@ -146,7 +146,7 @@
                                     $resolved++;
                                   }
                                 }  
-                                if(count($events > 0)){
+                                if(@count($events > 0)){
                                   echo ($resolved/count($events)) * 100 ;
                                 }?>%">
                                 <span class="sr-only">60% Complete</span>
@@ -183,7 +183,7 @@
                                     $unresolved++;
                                   }
                                 }  
-                                if(count($events > 0)){
+                                if(@count($events > 0)){
                                   echo ($unresolved/count($events)) * 100 ;
                                 }?>%">
                                 <span class="sr-only">60% Complete</span>

@@ -70,7 +70,7 @@
                                     $pending++;
                                   }
                                 }  
-                                if(count($requests > 0)){
+                                if(@count($requests > 0)){
                                   echo ($pending/count($requests)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">
@@ -109,7 +109,7 @@
                                     $in_progress++;
                                   }
                                 }  
-                                if(count($requests > 0)){
+                                if(@count($requests > 0)){
                                   echo ($in_progress/count($requests)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">50% Complete</span>
@@ -145,7 +145,7 @@
                                     $resolved++;
                                   }
                                 } 
-                                if(count($requests > 0)){ 
+                                if(@count($requests > 0)){ 
                                   echo ($resolved/count($requests)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">60% Complete</span>
@@ -183,7 +183,7 @@
                                     $unresolved++;
                                   }
                                 } 
-                                if(count($requests > 0)){ 
+                                if(@count($requests > 0)){ 
                                   echo ($unresolved/count($requests)) * 100 ;
                                 }  ?>%">
                                 <span class="sr-only">60% Complete</span>

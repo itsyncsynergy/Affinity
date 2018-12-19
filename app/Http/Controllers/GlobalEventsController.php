@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Session;
 use App\VipEvent;
+use App\GlobalVipEventCategories;
 use App\GlobalvipeventsInfoRequest;
 use App\Location;
+use App\Countries;
 use App\GlobalVipEventGallery;
 use App\Group;
 use App\Admin;
@@ -13,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class GlobalEventsController extends Controller
 {
@@ -26,7 +29,13 @@ class GlobalEventsController extends Controller
         $user = Auth::user();
         $user = Admin::where('admin_id', $user->details_id)->first();
 
-        $events = VipEvent::all();
+        // $events = VipEvent::all();
+
+        $events = DB::table('vip_events')
+        ->join('vip_event_categories', 'vip_events.category_id', '=', 'vip_event_categories.category_id')
+        ->join('countries', 'vip_events.country', '=', 'countries.id')
+        ->select('vip_events.*', 'vip_event_categories.cate_title as cate_title','countries.name as countryName')
+        ->get();
 
         return view('admin_vip_events')->with(['user'=> $user, 'events'=> $events]);
 
@@ -38,8 +47,10 @@ class GlobalEventsController extends Controller
         $user = Auth::user();
         $user = Admin::where('admin_id', $user->details_id)->first();
 
-        $countries = Location::distinct()->get(['country']);
-        return view('admin_vip_event_new')->with(['user'=> $user, 'countries'=> $countries]);
+        // $countries = Location::distinct()->get(['country']);
+        $countries = Countries::all();
+        $categories = GlobalVipEventCategories::all();
+        return view('admin_vip_event_new')->with(['user'=> $user, 'countries'=> $countries, 'categories' => $categories]);
     }
 
     public function editGlobalVipEvent($id){
@@ -48,13 +59,31 @@ class GlobalEventsController extends Controller
         $user = Auth::user();
         $user = Admin::where('admin_id', $user->details_id)->first();
         
-        $countries = Location::distinct()->get(['country']);
+        $countries = Countries::all();
         $members_joined = DB::table('globalvipevents_info_requests')->where('vip_event_id', $id)->join('customers','customers.customer_id','=','globalvipevents_info_requests.customer_id')->select('customers.*', 'customers.avatar as customer_avatar', 'globalvipevents_info_requests.*')->get()->toArray();
 
-        $event = DB::table('vip_events')->where('id', $id)->first();
+        // $event = DB::table('vip_events')->where('id', $id)->first();
+
+        $event = DB::table('vip_events')
+        ->join('vip_event_categories', 'vip_events.category_id', '=', 'vip_event_categories.category_id')
+        ->join('countries', 'vip_events.country', '=', 'countries.id')
+        ->select('vip_events.*', 'vip_event_categories.cate_title as cate_title', 'vip_event_categories.category_id as cate_id', 'countries.name as countryName', 'countries.id as countryID')
+        ->where('vip_events.id', $id)
+        ->first();
+
+        $categories = GlobalVipEventCategories::all();
 		
         
-        return view('admin_vip_event_edit')->with(['user'=> $user, 'members_joined'=> $members_joined, 'gallery'=> $gallery, 'event'=> $event,'countries'=> $countries]);
+        return view('admin_vip_event_edit')->with(['user'=> $user, 'members_joined'=> $members_joined, 'gallery'=> $gallery, 'event'=> $event,'countries'=> $countries, 'categories' => $categories]);
+    }
+
+    public function delete($id)
+    {
+        $event = VipEvent::where('id', $id)->first();
+
+        $event->delete();
+
+        return back();
     }
 
     /**
@@ -82,6 +111,8 @@ class GlobalEventsController extends Controller
 
         $event->city = $request->input('city');
 
+        $event->category_id = $request->input('category_id');
+
         $event->state = $request->input('state');
 
         $event->country = $request->input('country');
@@ -90,9 +121,9 @@ class GlobalEventsController extends Controller
 
         $event->capacity = $request->input('capacity');
 
-        $event->date = substr( $request->input('date'), 0, strrpos($request->input('date'), '-' ) );
+        $event->date = substr( $request->input('date'), 0,10 );
 
-        $event->end_date = substr($request->input('date'), strpos($request->input('date'), "-") + 1);
+        $event->end_date = substr($request->input('date'), 13,21 + 1);
 
 
         //$event->time = $request->input('time');
@@ -203,6 +234,8 @@ class GlobalEventsController extends Controller
 
         $event->title = $request->input('title');
 
+        $event->category_id = $request->input('category_id');
+
         $event->city = $request->input('city');
 
         $event->state = $request->input('state');
@@ -213,9 +246,9 @@ class GlobalEventsController extends Controller
 
         $event->capacity = $request->input('capacity');
 
-        $event->date = substr( $request->input('date'), 0, strrpos($request->input('date'), '-' ) );
+        $event->date = substr( $request->input('date'), 0,10 );
 
-        $event->end_date = substr($request->input('date'), strpos($request->input('date'), "-") + 1);
+        $event->end_date = substr($request->input('date'), 13,21 + 1);
 
 
         //$event->time = $request->input('time');
@@ -326,4 +359,99 @@ class GlobalEventsController extends Controller
         }  
 
     }
+
+    public function events_to_category($id)
+    {
+
+        $event = DB::table('vip_events')
+        ->join('vip_event_categories', 'vip_events.category_id', '=', 'vip_event_categories.category_id')        
+        ->select('vip_events.id as category_id', 'vip_events.title as cate_title','vip_events.avatar', 'vip_events.city as venue', 'vip_events.state')
+        ->where('vip_events.category_id', $id)
+        ->get();
+
+        return $event;
+    }
+
+    public function single_ticket_event($id)
+    {
+        // $event = VipEvent::where('id', $id)->first();
+
+        $event = DB::table('vip_events')
+        ->join('countries', 'vip_events.country', '=', 'countries.id')
+        ->select('vip_events.*', 'countries.name as country')
+        ->where('vip_events.id', $id)
+        ->first();
+
+        $gallery = GlobalVipEventGallery::where('vip_event_id', $id)
+        ->select('id', 'image as images')
+        ->get();
+
+        $gimage_ = null;
+
+        if ($gallery->isEmpty()) {
+
+            $gallery = null;
+
+            $gimage = null;
+           
+        }else{
+            $gimage = GlobalVipEventGallery::where('vip_event_id', $id)
+            ->select('image as images')
+            ->first();
+            $gimage_ = $gimage->images;
+        }
+
+        return response()->json([
+            'error' => false,
+            'event' => $event,
+            'gimage' => $gimage_,
+            'gallery' => $gallery
+        ]); 
+
+        
+    }
+
+    public function buyTicket(Request $request)
+    {
+        $pin = Str::random(20);
+
+        $booking = new GlobalvipeventsInfoRequest;
+
+        $booking->customer_id = $request->input('customer_id');
+
+        $booking->category_id = $request->input('category_id');
+
+        $booking->vip_event_id = $request->input('event_id');
+
+        $booking->fullname = $request->input('fullname');
+
+        $booking->email = $request->input('email');
+
+        $booking->phone = $request->input('phone');
+
+        $booking->quantity = $request->input('quantity');
+
+        $booking->reference = $pin;
+
+        $booking->status = 'Pending';
+
+        if ($booking->save()) {
+
+            return response()->json([
+            'error' => false,
+            'message' => 'Booking Sent Successfully',
+            'reference' => $pin
+            ]);
+
+        } else {
+            
+            return response()->json([
+            'error' => true,
+            'message' => 'Error Occurred'
+            ]);
+
+        }
+        
+    }
+
 }

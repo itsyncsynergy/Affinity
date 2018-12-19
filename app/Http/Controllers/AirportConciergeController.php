@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Session;
 use App\AirportConcierge;
+use App\Departure;
+use App\Arrival;
+use App\RoundTrip;
 use App\Group;
 use App\Admin;
 use Illuminate\Support\Facades\Auth;
@@ -64,4 +67,58 @@ class AirportConciergeController extends Controller
         }  
 
     }
+
+    public function saveConcierge(Request $request)
+    {
+        $concierge = new AirportConcierge;
+
+        $service = $request->input('service');
+
+        $additional = implode(', ', array_map(function($entry) {
+            return $entry['name'];
+        }, $service));
+
+        $concierge->customer_id = $request->input('customer_id');
+
+        $concierge->service = $request->input('request_type');
+
+        $concierge->airport1 = $request->input('airport');
+
+        $concierge->airline = $request->input('airline');
+
+        $concierge->class = $request->input('class');
+
+        $concierge->no_of_passengers = $request->input('num_pass');
+
+        $concierge->date = $request->input('date');
+
+        $concierge->time = $request->input('time');
+
+        $concierge->additional_service = $additional;
+
+        $concierge->others = $request->input('others');
+
+        $concierge->status = 'Pending';
+
+        if ($concierge->save()) {
+            
+            return response()->json([
+                'error' => false,
+                'message' => 'Record Saved Successfully'
+            ]);
+
+        } else {
+            
+            return response()->json([
+                'error' => true,
+                'message' => 'Something went Wrong'
+            ]);
+
+        }
+        
+        
+    }
+
+
+  
 }

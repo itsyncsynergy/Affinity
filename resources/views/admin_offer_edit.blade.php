@@ -56,6 +56,14 @@
                   </div>
                   <div class="x_content">
                     <form class="form-horizontal form-label-left" method="post" enctype="multipart/form-data" action="../admin_offer_update">
+                      @foreach ($offermerchant as $offer)
+                      <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Merchant</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <input type="text" name="merchant_name" value="{!!$offer->name !!}" class="form-control" readonly>
+                          <span class="fa fa-tag form-control-feedback right" aria-hidden="true"></span>
+                        </div>
+                      </div>
                     <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Offer Type</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
@@ -84,7 +92,7 @@
                       </div>    
                       
                       
-                      <fieldset>
+                      <div class="form-group" > 
                         <div class="control-group">
                           <div class="controls">
                           <label class="control-label col-md-3 col-sm-3 col-xs-3">Start & End Date</label>
@@ -94,7 +102,7 @@
                             </div>
                           </div>
                         </div>
-                      </fieldset> 
+                      </div> 
                       <div class="form-group" >   
                       <label class="control-label col-md-3 col-sm-3 col-xs-3">Target Members</label>                  
                         <div class="col-md-9 col-sm-9 col-xs-12">
@@ -105,17 +113,7 @@
                           </div>
                           <div class="checkbox">
                             <label>
-                              <input type="checkbox" name="target_members[]" value="Business Classic"> Business Classic
-                            </label>
-                          </div>
-                          <div class="checkbox">
-                            <label>
                               <input type="checkbox" name="target_members[]" value="Premium"> Premium
-                            </label>
-                          </div>
-                          <div class="checkbox">
-                            <label>
-                              <input type="checkbox" name="target_members[]" value="Business X"> Business X
                             </label>
                           </div>
                           <div class="checkbox">
@@ -138,19 +136,73 @@
                           <textarea type="text" name="details" class="resizable_textarea form-control" required placeholder="Details here..."> {!!$offer->details !!}</textarea>
                         </div>
                       </div>
+                      @endforeach
                       <input type="hidden" class="form-control"  value="{!!$offer->offer_id !!}" name="offer_id" required>
                       
                       <div class="ln_solid"></div>
 
                       <div class="form-group">
                         <div class="col-md-9 col-md-offset-3">
-                          <button type="submit" class="btn btn-primary">Cancel</button>
+                          <a href="../admin_merchants_offers" class="btn btn-default"> Cancel</a>
                           <button type="submit" class="btn btn-success">Submit</button>
                         </div>
                       </div>
 
                     </form>
                   </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="row">
+                   <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Tags <small></small></h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                              </li>
+                              <li class="dropdown">
+                                <a href="../admin_merchants_offers"><i class="fa fa-group"></i> List Offers</a>
+                              </li>
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <form method="post" action="../admin_offer_tag_store" class="form-horizontal">
+                                <div class="form-group">   
+                                  <label class="control-label col-md-3 col-sm-3 col-xs-3">Tags</label>                  
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                      @foreach ($tags as $tag)
+                                      <div class="col-md-4">
+                                        <div class="checkbox">
+                                          <label>
+                                            <input type="checkbox" name="tag_id[]" value="{{$tag->group_id}}"> {{$tag->name}}
+                                          </label>
+                                        </div>
+                                      </div>
+                                      @endforeach
+                                    </div>
+                                </div>
+                                <input type="hidden" class="form-control" name="offer_id" value="{!! $offer->offer_id !!}">
+                                <div class="form-group">
+                                  <div class="col-md-9 col-md-offset-3">
+                                    <button type="submit" class="btn btn-default">Add Tags</button>
+                                  </div>
+                                </div>
+                            </form>
+                            <br>
+                      
+                        </div>
+
+                        <div class="footer">
+                          <div class="row">
+                            @foreach ($eventTag as $tagged)
+                            <div class="col-md-4">
+                              <a href="../admin_offer_tag_delete/{!! $tagged->group_id !!}/{!! $offer->offer_id !!}"><i class="fa fa-trash" style="color: rgb(224, 12, 16)"></i> {!! $tagged->name !!}</a>
+                            </div>
+                            @endforeach
+                          </div>
+                        </div> 
+                   </div>
                 </div>
               </div>
               

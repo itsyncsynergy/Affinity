@@ -62,6 +62,7 @@
                           <th>Avatar</th>
                           <th>Name</th>
                           <th>Id</th>
+                          <th>Pin</th>
                           <th>Phone</th>
                           <th> Email </th>
                           <th> Rating </th>
@@ -82,6 +83,7 @@
                           </td>
                           <td>{!! $merchant->name !!}</td>
                           <td>{!! $merchant->merchant_id !!}</td>
+                          <td>{!! $merchant->verification_pin !!}</td>
                           <td>{!! $merchant->contact !!}</td>
                           <td>{!! $merchant->email !!}</td>
                           <td>{!! $merchant->rating !!}</td>
@@ -90,6 +92,7 @@
                           <td>
                           <a class="btn btn-default btn-success source" href="admin_merchant_edit/{!! $merchant->id !!}"><i class="fa fa-pencil"></i></a>
                           <button class="btn btn-default btn-success source" onclick='openMyModal(<?php echo json_encode($merchant); ?>)' ><i class="fa fa-eye"></i></button>
+                          <a class="btn btn-default btn-danger source" href="admin_merchant_delete/{!! $merchant->id !!}"><i class="fa fa-trash"></i></a>
                           </td>
                         </tr>
                       @endforeach  
@@ -127,13 +130,19 @@
         document.getElementById('body-6').innerHTML = data.ntk; 
         document.getElementById('body-7').innerHTML = data.website; 
       }
+
+      function openDeleteModal(data){
+        $('#delete_modal').modal('show');
+        document.getElementById('event_title').innerHTML = 'Delete ' +data.name;
+        document.getElementById('event_delete').value = data.name;
+        document.getElementById('event_id').value = data.id;
+      }
     </script>
     <button type="hidden" id="modal-button" data-toggle="modal" data-target="#myModal">Open Modal</button>
   
   </body>
   <div id="myModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
-
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -142,7 +151,9 @@
         <div class="modal-body">
           <div class="row">
             <div class="col-md-3">
-              <div id="body-1"></div>
+              <div id="body-1">
+                
+              </div>
             </div>
             <div class="col-md-9">
                 <h5><b>Address<b/></h4>
@@ -157,13 +168,15 @@
                 <p id="body-5"></p>
                 <h5><b>Need to know<b/></h4>
                 <p id="body-6"></p>
-          </div>  
+            </div>
+          </div>
         </div>
+
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
       </div>
-
     </div>
   </div>
+
 </html>

@@ -23,20 +23,28 @@ class LoginController extends Controller
 
     	$username = $request->input('username');
 
-    	$password = $request->input('password');
+        $password = $request->input('password');
 
     	if (Auth::attempt(['username' => $username, 'password' => $password])){
 
-            $user = Auth::user();
+           $user = Auth::user();
             
-           $customer = DB::table('customers')->where('user_id', $user->id)->join('users','users.id','=','customers.user_id')->select('customers.*', 'users.*')->first();
-
-            return response()->json(['success' => true, 'message' => 'Authentication was successfull', 'customer'=> $customer],200);
+        //    $customer = DB::table('customers')->where('user_id', $user->id)->join('users','users.id','=','customers.user_id')->select('customers.*', 'users.*')->first();
+            $admins = DB::table('admins')->join('users','users.details_id','=','admins.admin_id')
+            ->where('admin_id', $user->details_id)
+            ->select('admins.*', 'users.*')->get()->toArray();
+        
+            return response()->json(['success' => true, 'message' => 'Authentication is successful', 'admins' => $admins],200);
 
     	}else{		
 
-            return response()->json(['error' => true, 'message' => 'Authentication failed'],200);
-		}
+            return response()->json(['error' => true, 'message' => 'Authentication failed'], 401);
+	}
+        
+    }
 
+    public function mobile_signup(Request $request)
+    {
+        
     }
 }

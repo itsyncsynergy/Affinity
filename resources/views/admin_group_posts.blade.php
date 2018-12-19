@@ -76,7 +76,7 @@
                           <td>{!! $group->title !!}</td>
                           <td>{!! $group->post !!}</td>
                           <td>{!! $group->created_at !!}</td>
-                          <td><a class="btn btn-default btn-success source" href="../admin_group_post_delete/{!! $group->id !!}"><i class="fa fa-pencil"></i>Delete</a></td>
+                          <td><a class="btn btn-default btn-danger source" href="../admin_group_post_delete/{!! $group->id !!}"><i class="fa fa-trash"></i></a></td>
                         </tr>
                       @endforeach  
                       </tbody>
@@ -122,7 +122,7 @@
 
                       <div class="form-group">
                         <div class="col-md-9 col-md-offset-3">
-                          <button type="submit" class="btn btn-primary">Cancel</button>
+                          <a href="../admin_groups" class="btn btn-default">Cancel</a>
                           <button type="submit" class="btn btn-success">Submit</button>
                         </div>
                       </div>

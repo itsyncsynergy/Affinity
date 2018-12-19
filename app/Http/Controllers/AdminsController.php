@@ -24,19 +24,28 @@ class AdminsController extends Controller
         $vpas = DB::table('vpas')->leftJoin('customers','vpas.customer_id', '=',  'customers.customer_id')->select('customers.*',  'vpas.*')->get()->toArray();
         $rentals = DB::table('rentals')->orderBy('created_at', 'desc')->get();
         $airportConcierge = AirportConcierge::all();
-        $bespoke_product_requests = DB::table('bespoke_product_requests')->join('customers','customers.customer_id','=','bespoke_product_requests.customer_id')->join('bespoke_products','bespoke_products.id','=','bespoke_product_requests.bespoke_product_id')->select('customers.phone','customers.firstname', 'customers.lastname', 'bespoke_products.*', 'bespoke_product_requests.*')->get()->toArray();
-		$waitlisted_product_requests = DB::table('waitlisted_product_requests')->join('customers','customers.customer_id','=','waitlisted_product_requests.customer_id')->join('waitlisted_products','waitlisted_products.id','=','waitlisted_product_requests.waitlisted_product_id')->select('customers.phone','customers.firstname', 'customers.lastname', 'waitlisted_products.*', 'waitlisted_product_requests.*')->get()->toArray();
-        $bespoke_travel = BespokeTravel::all();
-        $requests = DB::table('customer_luxury_experiences')->leftJoin('customers','customer_luxury_experiences.customer_id', '=',  'customers.customer_id')->join('luxury_experiences','luxury_experiences.experience_id', '=',  'customer_luxury_experiences.experience_id')->select('customers.*',  'customer_luxury_experiences.*', 'luxury_experiences.*')->get()->toArray();
-		$flight_bookings = DB::table('flight_bookings')->leftJoin('customers','flight_bookings.customer_id', '=',  'customers.customer_id')->select('customers.*',  'flight_bookings.*')->get()->toArray();
-		$events = DB::table('globalvipevents_info_requests')->leftJoin('customers','globalvipevents_info_requests.customer_id', '=',  'customers.customer_id')->join('vip_events','vip_events.id', '=',  'globalvipevents_info_requests.vip_event_id')->select('customers.*',  'globalvipevents_info_requests.*', 'vip_events.*', 'vip_events.id as event_id')->get()->toArray();
-		$p_events = DB::table('privateparty_info_requests')->leftJoin('customers','privateparty_info_requests.customer_id', '=',  'customers.customer_id')->join('private_parties','private_parties.id', '=',  'privateparty_info_requests.private_party_id')->select('customers.*',  'privateparty_info_requests.*', 'privateparty_info_requests.id as event_id', 'private_parties.*')->get()->toArray();
-		
-        
-        //$admins = DB::table('admins')->join('users','users.details_id','=','admins.admin_id')->select('admins.*', 'users.*')->get()->toArray();
-		
 
-        return view('admin_index')->with(['user'=> $user, 'p_events'=> $p_events, 'events'=> $events, 'flight_bookings'=> $flight_bookings, 'vpas'=> $vpas, 'rentals'=> $rentals, 'airport_concierge'=> $airportConcierge,'bespoke_product_requests'=> $bespoke_product_requests, 'waitlisted_product_requests'=> $waitlisted_product_requests, 'bespoke_travel'=> $bespoke_travel, 'requests'=> $requests,  /*, 'admins'=> $admins*/]);
+        $bespoke_product_requests = DB::table('bespoke_product_requests')
+        ->select('bespoke_product_requests.*')->get();
+        $waitlisted_product_requests = DB::table('waitlisted_product_requests')
+        ->select('waitlisted_product_requests.*')->get()->toArray();
+        $bespoke_travel = BespokeTravel::all();
+        $requests = DB::table('customer_luxury_experiences')->select(  'customer_luxury_experiences.*')->get()->toArray();
+        $flight_bookings = DB::table('flight_bookings')->select( 'flight_bookings.*')->get()->toArray();
+		$events = DB::table('globalvipevents_info_requests')->leftJoin('customers','globalvipevents_info_requests.customer_id', '=',  'customers.customer_id')->join('vip_events','vip_events.id', '=',  'globalvipevents_info_requests.vip_event_id')->select('customers.*',  'globalvipevents_info_requests.*', 'vip_events.*', 'vip_events.id as event_id')->get()->toArray();
+        $p_events = DB::table('privateparty_info_requests')->leftJoin('customers','privateparty_info_requests.customer_id', '=',  'customers.customer_id')->join('private_parties','private_parties.id', '=',  'privateparty_info_requests.private_party_id')->select('customers.*',  'privateparty_info_requests.*', 'privateparty_info_requests.id as event_id', 'private_parties.*')->get()->toArray();
+
+        $today = DB::select("SELECT merchant_offers.*  FROM merchant_offers WHERE date_format(end_date, '%Y-%m-%d') BETWEEN CURDATE() AND date_add(CURDATE(), INTERVAL 0 DAY)");
+
+        $seven = DB::select("SELECT merchant_offers.*  FROM merchant_offers WHERE date_format(end_date, '%Y-%m-%d') BETWEEN CURDATE() AND date_add(CURDATE(), INTERVAL 7 DAY)");
+
+        $twenty_one = DB::select("SELECT merchant_offers.*  FROM merchant_offers WHERE date_format(end_date, '%Y-%m-%d') BETWEEN CURDATE() AND date_add(CURDATE(), INTERVAL 21 DAY)");
+
+        $month = DB::select("SELECT merchant_offers.*  FROM merchant_offers WHERE date_format(end_date, '%Y-%m-%d') BETWEEN CURDATE() AND date_add(CURDATE(), INTERVAL 30 DAY)");
+
+        // $expiry = $expiry->count();
+		
+        return view('admin_index')->with(['user'=> $user, 'p_events'=> $p_events, 'events'=> $events, 'flight_bookings'=> $flight_bookings, 'vpas'=> $vpas, 'rentals'=> $rentals, 'airport_concierge'=> $airportConcierge,'bespoke_product_requests'=> $bespoke_product_requests, 'waitlisted_product_requests'=> $waitlisted_product_requests, 'bespoke_travel'=> $bespoke_travel, 'requests'=> $requests, 'today' => $today, 'seven'=> $seven, 'twenty_one' => $twenty_one, 'month' => $month  /*, 'admins'=> $admins*/]);
 
 	
     }
@@ -149,10 +158,10 @@ class AdminsController extends Controller
             $user = new User;
 
             $user->username = $request->input('email');
-            $user->password = bcrypt('password');
+            $user->password = bcrypt($request->input('password'));
             $user->group_id = 3; // 3 for admin profile
             $user->details_id = $admin->admin_id; 
-            $user->user_type = 'admin';   
+            $user->user_type = $request->input('admin_type');   
 
             if($user->save()){
                 Session::flash('success', 'Admin profile created');

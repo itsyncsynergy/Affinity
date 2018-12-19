@@ -107,8 +107,54 @@ class BespokeProductCategoriesController extends Controller
         move_uploaded_file($avatar, public_path($path));
         
         $bespoke_product_categories->avatar = $path;
-        
 
+        try {
+
+            \Tinify\setKey(env("TINIFY_KEY"));
+                $source = \Tinify\fromFile($path);
+                $source->toFile($path);
+            
+        } catch(\Tinify\AccountException $e) {
+                    // Verify your API key and account limit.
+
+                         return response()->json([
+
+                            'error' => $e->getMessage(),
+                            
+                         ]);
+                    
+                } catch(\Tinify\ClientException $e) {
+                    // Check your source image and request options.
+                        return response()->json([
+
+                            'error' => $e->getMessage(),
+                        
+                        ]);
+                } catch(\Tinify\ServerException $e) {
+                    // Temporary issue with the Tinify API.
+                        return response()->json([
+
+                            'error' => $e->getMessage(),
+                        
+                        ]);
+                } catch(\Tinify\ConnectionException $e) {
+                    // A network connection error occurred.
+                        return response()->json([
+
+                            'error' => $e->getMessage(),
+                        
+                        ]);
+                } catch(Exception $e) {
+                    // Something else went wrong, unrelated to the Tinify API.
+                         return response()->json([
+
+                            'error' => $e->getMessage(),
+
+                         ]);
+
+                        
+                }
+        
 
         if($bespoke_product_categories->save()){
             Session::flash('success', 'Event '. $bespoke_product_categories->name . ' has been created');

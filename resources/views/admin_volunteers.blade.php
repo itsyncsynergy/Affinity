@@ -12,30 +12,25 @@
 
     @include("includes.admin-index-head")
     <script>
-      function getStates(){
+     function getStates(){
+        console.log(document.getElementById('country_id').value);
             $.post("get_state",
             {
-                country: document.getElementById('country').value
+                country_id: document.getElementById('country_id').value
             },
             function(data, status){
               console.log(data);
+
+              $('#state').find('option').not(':first').remove();
+
               $.each(data.states, function(i, d) {
-                $('#state').append('<option value="' + d.state + '">' + d.state + '</option>');
+                $('#state').append('<option value="' + d.name + '">' + d.name + '</option>');
               });
+
+              
             });
       }
-      function getStates1(){
-            $.post("get_state",
-            {
-                country: document.getElementById('country_input').value
-            },
-            function(data, status){
-              console.log(data);
-              $.each(data.states, function(i, d) {
-                $('#state1').append('<option value="' + d.state + '">' + d.state + '</option>');
-              });
-            });
-      }
+      
     </script> 
     <script>
       function openEditModal(data){
@@ -44,6 +39,7 @@
         document.getElementById('title_input').value = data.title;
         document.getElementById('ntk_input').value = data.ntk;
         document.getElementById('post_input').value = data.post;
+        document.getElementById('itinerary_input').value = data.itinerary;
         document.getElementById('volunteer_id').value = data.id;
         document.getElementById('reservation-time').value = data.start_date + ' - ' + data.end_date;
         
@@ -57,7 +53,14 @@
         document.getElementById('body-2').innerHTML = data.country + ', ' + data.state;
         document.getElementById('body-3').innerHTML = data.post; 
         document.getElementById('body-4').innerHTML = data.ntk;
-        document.getElementById('body-5').innerHTML = data.category;  
+        document.getElementById('body-5').innerHTML = data.cate_title;  
+      }
+
+      function openDeleteModal(data){
+        $('#delete_modal').modal('show');
+        document.getElementById('delete_title').innerHTML = 'Delete ' +data.title;
+        document.getElementById('title_delete').value = data.title;
+        document.getElementById('von_id').value = data.id;
       }
     </script> 
   </head>
@@ -99,6 +102,7 @@
                         <tr>
                           <th>Avatar</th>
                           <th>Title</th>
+                          <th>Category</th>
                           <th>Created </th>
                           <th>Action </th>
                         </tr>
@@ -106,17 +110,20 @@
 
 
                       <tbody>
-                      @foreach ($volunteers as $volunteer) 
+                      @foreach ($results as $result) 
                         <tr>
                           <td>
                             <div class="profile_pic">
-                              <img src="public/{{ $volunteer->avatar or 'images/profile.png'}}" style="width:60px !important; height:60px;" alt="..." class="img-circle profile_img">
+                              <img src="public/{{ $result->avatar or 'images/profile.png'}}" style="width:60px !important; height:60px;" alt="..." class="img-circle profile_img">
                             </div>
                           </td>
-                          <td>{!! $volunteer->title !!}</td>
-                          <td>{!! $volunteer->created_at !!}</td>
-                          <td><a class="btn btn-default btn-success source" href="javascript:void(0)" onclick='openEditModal(<?php echo json_encode($volunteer); ?>)'><i class="fa fa-pencil"></i></a>
-                          <button class="btn btn-default btn-success source" onclick='openMyModal(<?php echo json_encode($volunteer); ?>)' ><i class="fa fa-eye"></i></button>
+                          <td>{!! $result->title !!}</td>
+                          <td>{!! $result->cate_title !!}</td>
+                          <td>{!! $result->created_at !!}</td>
+                          <td><a class="btn btn-default btn-success source" href="javascript:void(0)" onclick='openEditModal(<?php echo json_encode($result); ?>)'><i class="fa fa-pencil"></i></a>
+                          <button class="btn btn-default btn-success source" onclick='openMyModal(<?php echo json_encode($result); ?>)' ><i class="fa fa-eye"></i></button>
+
+                          <button class="btn btn-default btn-danger source" onclick='openDeleteModal(<?php echo json_encode($result); ?>)' ><i class="fa fa-trash"></i></button>
                           </td>
                         </tr>
                       @endforeach  
@@ -147,22 +154,20 @@
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Country</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <select class="select2_single form-control" onchange="getStates()" id="country" name="country" tabindex="-1">
+                          <select class="select2_single form-control" onchange="getStates()" id="country_id" name="country_id" tabindex="-1">
                             @foreach ($countries as $country) 
-                            <option value="{{$country->country}}">{{$country->country}}</option> 
+                            <option value="{{$country->id}}">{{$country->name}}</option> 
                             @endforeach
                           </select>  
                           <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
                         </div>
                       </div>
-                      <div class="form-group">
+                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">State</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
                           <select class="select2_single form-control" id="state"  name="state" tabindex="-1">
-                            {{--@foreach ($states as $state) 
-                            <option value="{{$state->state}}">{{$state->state}}</option> 
-                            @endforeach --}}
-                          </select>  
+                            <option> Select States </option>
+                          </select> 
                           <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
                         </div>
                       </div>
@@ -177,6 +182,18 @@
                           </div>
                         </div>
                       </fieldset> 
+                      <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Category</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <select name="category_id" class="form-control">
+                            
+                            <option>Select Category</option>
+                            @foreach ($categories as $category)
+                              <option value="{!! $category->category_id !!} ">{!! $category->cate_title !!} </option>
+                            @endforeach
+                          </select>
+                        </div>
+                      </div> 
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Avatar</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
@@ -194,6 +211,26 @@
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Need to Know</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
                           <textarea type="text" name="ntk" class="resizable_textarea form-control" required placeholder="Need to know here..."></textarea>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Itinerary</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <input type="text" name="itinerary" class="form-control" required>
+                          <span class="fa fa-tag form-control-feedback right" aria-hidden="true"></span>
+                        </div>
+                      </div> 
+
+                      <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Fee</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <select class="form-control"  name="fee" tabindex="-1">
+                            
+                            <option value="Paid">Paid</option> 
+                            <option value="Free">Free</option>
+                           
+                          </select>  
+                          
                         </div>
                       </div>
                       {{--<input type="hidden" name="volunteer_id" class="form-control" value="{!! $id !!}" required>--}}
@@ -246,28 +283,38 @@
               <span class="fa fa-tag form-control-feedback right" aria-hidden="true"></span>
             </div>
           </div>                 
+           <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Country</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <select class="select2_single form-control" onchange="getStates()" id="country_id" name="country_id" tabindex="-1">
+                            @foreach ($countries as $country) 
+                            <option value="{{$country->id}}">{{$country->name}}</option> 
+                            @endforeach
+                          </select>  
+                          <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
+                        </div>
+                      </div>
           <div class="form-group">
-            <label class="control-label col-md-3 col-sm-3 col-xs-3">Country</label>
-            <div class="col-md-9 col-sm-9 col-xs-9">
-              <select class="select2_single form-control" id="country_input" onchange="getStates1()" id="country" name="country" tabindex="-1">
-                @foreach ($countries as $country) 
-                <option value="{{$country->country}}">{{$country->country}}</option> 
-                @endforeach
-              </select>  
-              <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
-            </div>
-          </div>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">State</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <select class="select2_single form-control" id="state"  name="state" tabindex="-1">
+                            <option> Select States </option>
+                          </select> 
+                          <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
+                        </div>
+                      </div>
           <div class="form-group">
-            <label class="control-label col-md-3 col-sm-3 col-xs-3">State</label>
-            <div class="col-md-9 col-sm-9 col-xs-9">
-              <select class="select2_single form-control" id="state1"  name="state" tabindex="-1">
-                {{--@foreach ($states as $state) 
-                <option value="{{$state->state}}">{{$state->state}}</option> 
-                @endforeach --}}
-              </select>  
-              <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
-            </div>
-          </div>
+              <label class="control-label col-md-3 col-sm-3 col-xs-3">Category</label>
+              <div class="col-md-9 col-sm-9 col-xs-9">
+                  <select name="category_id" class="form-control">
+                            
+                     <option>Select Category</option>
+                        @foreach ($categories as $category)
+                           <option value="{!! $category->category_id !!} ">{!! $category->cate_title !!} </option>
+                        @endforeach
+                  </select>
+              </div>
+          </div> 
           <fieldset>
             <div class="control-group">
               <div class="controls">
@@ -287,6 +334,22 @@
             </div>
           </div>
           <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-3">Itinerary</label>
+            <div class="col-md-9 col-sm-9 col-xs-9">
+              <input type="text" name="itinerary" id="itinerary_input" class="form-control" required/>
+              <span class="fa fa-tag form-control-feedback right" aria-hidden="true"></span>
+            </div>
+          </div> 
+          <div class="form-group">
+              <label class="control-label col-md-3 col-sm-3 col-xs-3">Fee</label>
+              <div class="col-md-9 col-sm-9 col-xs-9">
+                 <select class="form-control"  name="fee" tabindex="-1">      
+                      <option value="Paid">Paid</option> 
+                      <option value="Free">Free</option> 
+                 </select>    
+              </div>
+          </div>
+          <div class="form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-3">Details</label>
             <div class="col-md-9 col-sm-9 col-xs-9">
               <textarea type="text" name="post"  id="post_input" class="resizable_textarea form-control" required placeholder="Details here..."></textarea>
@@ -303,16 +366,14 @@
 
           <div class="form-group">
             <div class="col-md-9 col-md-offset-3">
-              <button type="submit" class="btn btn-primary">Cancel</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
               <button type="submit" class="btn btn-success">Submit</button>
             </div>
           </div>
 
           </form>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
+       
       </div>
     </div>
   </div>  
@@ -349,5 +410,40 @@
       </div>
 
     </div>
-  </div>  
+  </div> 
+
+    <div id="delete_modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" id="delete_title"> </h4>
+        </div>
+        <div class="modal-body">
+        <form class="form-horizontal form-label-left" method="post" enctype="multipart/form-data" action="admin_volunteer_delete">
+
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-3">Title</label>
+            <div class="col-md-9 col-sm-9 col-xs-9">
+              <input type="text" name="title" id="title_delete" class="form-control" readonly />
+              <span class="fa fa-tag form-control-feedback right" aria-hidden="true"></span>
+            </div>
+          </div>   
+         
+          <input type="hidden" name="volunteer_id" id="von_id" class="form-control">
+          <div class="ln_solid"></div>
+
+          <div class="form-group">
+            <div class="col-md-9 col-md-offset-3">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+          </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div> 
 </html>

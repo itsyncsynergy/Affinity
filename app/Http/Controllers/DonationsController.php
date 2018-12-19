@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Session;
 use App\Admin;
 use App\Donation;
+use App\DonationCategories;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -24,10 +25,42 @@ class DonationsController extends Controller
         $user = Auth::user();
         $user = Admin::where('admin_id', $user->details_id)->first();
 
-        $donations = Donation::all();
-        
-        return view('admin_donations')->with(['user'=> $user, 'donations'=> $donations]);
+        $categories = DonationCategories::all();
 
+        $results = DB::table('donations')
+        ->join('donation_categories', 'donations.category_id', '=', 'donation_categories.category_id')
+        ->select('donations.*', 'donation_categories.cate_title')
+        ->get();
+
+        return view('admin_donations')->with(['user'=> $user, 'results'=> $results, 'categories' => $categories]);
+
+    }
+
+    public function getDonations($id)
+    {
+        try
+        {
+            $donation = DB::table('donations')
+            ->leftjoin('donation_categories', 'donations.category', '=', 'donation_categories.category_id')
+            ->select('donations.id as category_id', 'donations.title as cate_title', 'avatar')
+            ->where('donations.category', $id)
+            ->get();
+
+            return $donation;
+        }
+        catch (ModelNotFoundException $ex)
+        {
+            // Record not found... return error message
+            return response()->json(['error' => true, 'message' => 'Record not found'],404);
+        }
+        
+    }
+
+    public function fetchDonation($id)
+    {
+        $donation = Donation::where('id', $id)->first();
+
+        return $donation;
     }
 
    
@@ -40,6 +73,12 @@ class DonationsController extends Controller
         $donation->post = $request->input('post');
 
         $donation->website = $request->input('website'); 
+
+        $donation->phone = $request->input('phone'); 
+
+        $donation->needtoknow = $request->input('needtoknow'); 
+
+        $donation->category_id = $request->input('category_id'); 
 
         $avatar = $request->file('avatar'); 
         
@@ -55,19 +94,15 @@ class DonationsController extends Controller
         
 
 
-        if($donation->save()){
-            Session::flash('success', $donation->type . ' has been created');
+       if($donation->save()){
+            Session::flash('success', 'New Donation has been created');
             return back();
         }else{
             Session::flash('error', 'An error occured. Process execution failed');
             return back();
-        }  
+        }   
 
     }
-
-    
-    
-
 
     public function deleteFile(Request $request)
     {
@@ -97,6 +132,12 @@ class DonationsController extends Controller
 
         $donation->website = $request->input('website'); 
 
+         $donation->phone = $request->input('phone'); 
+
+        $donation->needtoknow = $request->input('needtoknow'); 
+
+        $donation->category_id = $request->input('category_id'); 
+
         if($request->hasFile('avatar')){
             $avatar = $request->file('avatar'); 
             
@@ -113,13 +154,26 @@ class DonationsController extends Controller
 
 
         if($donation->save()){
-            Session::flash('success',$donation->title . ' has been updated');
+            Session::flash('success','Donation has been Updated Successfully');
             return back();
         }else{
             Session::flash('error', 'An error occured. Could not updated');
             return back();
-        }  
+        }   
 
+    }
+
+    public function delete($id)
+    {
+        $donation = Donation::where('id', $id)->first();
+
+        if($donation->delete()){
+            Session::flash('success', 'Donation has been Deleted Successfully');
+            return back();
+        }else{
+            Session::flash('error', 'An error occured. Could not updated');
+            return back();
+        } 
     }
 
 }

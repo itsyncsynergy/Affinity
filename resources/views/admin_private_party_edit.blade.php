@@ -24,6 +24,25 @@
       function deleteImage(){
         document.getElementById('deleteForm').submit();
       }
+
+      function getStates(){
+        console.log(document.getElementById('country_id').value);
+            $.post("../get_state",
+            {
+                country_id: document.getElementById('country_id').value
+            },
+            function(data, status){
+              console.log(data);
+
+              $('#state').find('option').not(':first').remove();
+
+              $.each(data.states, function(i, d) {
+                $('#state').append('<option value="' + d.name + '">' + d.name + '</option>');
+              });
+
+              
+            });
+      }
     </script>  
 
   </head>
@@ -68,7 +87,7 @@
                     <div class="clearfix"></div>
                   </div>
                   <div class="x_content">
-                    <form class="form-horizontal form-label-left" method="post" enctype="multipart/form-data" action="../admin_global_vip_event_update">
+                    <form class="form-horizontal form-label-left" method="post" enctype="multipart/form-data" action="../admin_private_party_update">
 
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Title</label>
@@ -78,25 +97,36 @@
                         </div>
                       </div> 
                       <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Country</label>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Category</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <select class="select2_single form-control" onchange="getStates()" id="country" name="country" tabindex="-1">
-                          <option value="{{$event->country}}">{{$event->country}}</option> 
-                            @foreach ($countries as $country) 
-                            <option value="{{$country->country}}">{{$country->country}}</option> 
+                          <select class="select2_single form-control" id="category_id" name="category_id" tabindex="-1">
+                            <option value="{{$event->categoryID}}">{{$event->cate_title}}</option> 
+                            @foreach ($categories as $category) 
+                            <option value="{{$category->category_id}}">{{$category->cate_title}}</option> 
                             @endforeach
                           </select>  
                           <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
                         </div>
                       </div>
                       <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Country</label>
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+                          <select class="select2_single form-control" onchange="getStates()" id="country_id" name="country" tabindex="-1">
+                            <option value="{{$event->countryID}}">{{$event->countryName}}</option> 
+                            @foreach ($countries as $country) 
+                            <option value="{{$country->id}}">{{$country->name}}</option> 
+                            @endforeach
+                          </select>  
+                          <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
+                        </div>
+                      </div>
+                      
+                      <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">State</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
                           <select class="select2_single form-control" id="state"  name="state" tabindex="-1">
                             <option value="{{$event->state}}">{{$event->state}}</option> 
-                            {{--@foreach ($states as $state) 
-                            <option value="{{$state->state}}">{{$state->state}}</option> 
-                            @endforeach --}}
+                            <option> Select States </option>
                           </select>  
                           <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
                         </div>
@@ -137,7 +167,7 @@
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Details</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <textarea type="text" name="details" class="resizable_textarea form-control" required placeholder="Details here..."> {!! $event->details !!}</textarea>
+                          <textarea type="text" name="details"> {!! $event->details !!}</textarea>
                         </div>
                       </div>
                       <input type="hidden" class="form-control" value="{!! $event->id !!}" name="id" required>

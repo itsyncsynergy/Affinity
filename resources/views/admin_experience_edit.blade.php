@@ -26,17 +26,21 @@
       }
 
       function getStates(){
-        $('#state').empty();
-        console.log(document.getElementById('country').value);
-            $.post("../get_state",
+        console.log(document.getElementById('country_id').value);
+            $.post("get_state",
             {
-                country: document.getElementById('country').value
+                country_id: document.getElementById('country_id').value
             },
             function(data, status){
               console.log(data);
+
+              $('#state').find('option').not(':first').remove();
+
               $.each(data.states, function(i, d) {
-                $('#state').append('<option value="' + d.state + '">' + d.state + '</option>');
+                $('#state').append('<option value="' + d.name + '">' + d.name + '</option>');
               });
+
+              
             });
       }
     
@@ -109,21 +113,6 @@
                         </div>
                       </div>  
                       
-                      <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Overview</label>
-                        <div class="col-md-9 col-sm-9 col-xs-9">
-                          <textarea type="text" name="overview" class="resizable_textarea form-control" required placeholder="Overview...">{!! $experience->overview !!}</textarea>
-                          <input type="text" name="overview" class="form-control"  value="{!! $experience->overview !!}" required>
-                          <span class="fa fa-tag form-control-feedback right" aria-hidden="true"></span>
-                        </div>
-                      </div>  
-                      <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Need to Know</label>
-                        <div class="col-md-9 col-sm-9 col-xs-9">
-                          <textarea type="text" name="ntk" class="resizable_textarea form-control" required placeholder="Need to know...">{!! $experience->ntk !!}</textarea>
-                          <span class="fa fa-tag form-control-feedback right" aria-hidden="true"></span>
-                        </div>
-                      </div>  
                       <fieldset>
                         <div class="control-group">
                           <div class="controls">
@@ -138,18 +127,19 @@
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Price</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                          <input type="number" name="price" class="form-control" value="{!! $experience->price !!}" required>
+                          <input type="text" name="price" class="form-control number" value="{!! $experience->price !!}" required>
                           <span class="fa fa-card form-control-feedback right" aria-hidden="true"></span>
                         </div>
-                      </div>  
+                      </div>
+                       
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Country</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
                           <select class="select2_single form-control" onchange="getStates()" id="country" name="country" tabindex="-1">
-                            @foreach ($countries as $country) 
-                            <option value="{{$country->country}}">{{$country->country}}</option> 
-                            @endforeach
-                          </select>  
+                              @foreach ($countries as $country)
+                            <option value="{{$country->name}}">{{$country->name}}</option> 
+                             @endforeach}}
+                            </select>
                           <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
                         </div>
                       </div>
@@ -157,9 +147,9 @@
                         <label class="control-label col-md-3 col-sm-3 col-xs-3">State</label>
                         <div class="col-md-9 col-sm-9 col-xs-9">
                           <select class="select2_single form-control" id="state"  name="state" tabindex="-1">
-                            {{-- @foreach ($states as $state) 
-                            <option value="{{$state->state}}">{{$state->state}}</option> 
-                            @endforeach --}}
+                            
+                            <option>{!! $experience->state !!}</option> 
+                            
                           </select>  
                           <span class="fa fa-map-marker form-control-feedback right" aria-hidden="true"></span>
                         </div>
@@ -200,6 +190,57 @@
                 </div>
               </div>
               <div class="col-md-5">
+                <div class="row">
+                   <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Tags <small>{!! $experience->name !!}</small></h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                              </li>
+                              <li class="dropdown">
+                                <a href="../admin_experiences"><i class="fa fa-group"></i> List Experiences</a>
+                              </li>
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <form method="post" action="../admin_experience_tag_store" class="form-horizontal">
+                                <div class="form-group">   
+                                  <label class="control-label col-md-3 col-sm-3 col-xs-3">Tags</label>                  
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                      @foreach ($tags as $tag)
+                                      <div class="col-md-4">
+                                        <div class="checkbox">
+                                          <label>
+                                            <input type="checkbox" name="tag_id[]" value="{{$tag->group_id}}"> {{$tag->name}}
+                                          </label>
+                                        </div>
+                                      </div>
+                                      @endforeach
+                                    </div>
+                                </div>
+                                <input type="hidden" class="form-control" name="experience_id" value="{!! $experience->experience_id !!}">
+                                <div class="form-group">
+                                  <div class="col-md-9 col-md-offset-3">
+                                    <button type="submit" class="btn btn-default">Add Tags</button>
+                                  </div>
+                                </div>
+                            </form>
+                            <br>
+                      
+                        </div>
+
+                        <div class="footer">
+                          <div class="row">
+                            @foreach ($eventTag as $tagged)
+                            <div class="col-md-4">
+                              <a href="../admin_experience_tag_delete/{!! $tagged->group_id !!}/{!! $experience->experience_id !!}"><i class="fa fa-remove" style="color: rgb(224, 12, 16)"></i> {!! $tagged->name !!}</a>
+                            </div>
+                            @endforeach
+                          </div>
+                        </div> 
+                   </div>
+                </div>
+
                 <div class="x_panel" style="height: 580px;overflow: auto !important;">
                   <div class="x_title">
                     <h2>Gallery <small>{!! $experience->experience_name !!}</small></h2>
@@ -290,4 +331,17 @@
     </div>
     @include("includes.admin-absolute-index-footer-script")
   </body>
+  <script>
+      
+        var el = document.querySelector('input.number');
+
+      el.addEventListener('keyup', function(event){
+        if (event.which >= 37 && event.which <= 40) 
+          return;
+
+        this.value = this.value.replace(/\D/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,',');
+      });
+     
+      
+    </script>
 </html>
