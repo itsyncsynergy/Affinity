@@ -450,6 +450,7 @@ class SubscriptionsController extends Controller
                                     'redemption' => $redemption
                                     
                                 ]);
+                                
                 } else {
                     
                     return response()->json([
